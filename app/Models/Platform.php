@@ -28,7 +28,7 @@ class Platform extends Model
 
     ];
 
-    public function role()
+    public function platform()
     {
         return $this->hasMany(videogamePlatform::class);
     }

@@ -15,7 +15,9 @@ return new class extends Migration
     {
         Schema::create('states', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('estado');
+            $table->dateTime('updated_at');
+            $table->dateTime('created_at');
         });
     }
 

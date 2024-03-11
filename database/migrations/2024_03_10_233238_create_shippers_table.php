@@ -15,7 +15,11 @@ return new class extends Migration
     {
         Schema::create('shippers', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('name');
+            $table->string('direccion');
+            $table->string('email_contacto')->unique();
+            $table->dateTime('updated_at');
+            $table->dateTime('created_at');
         });
     }
 

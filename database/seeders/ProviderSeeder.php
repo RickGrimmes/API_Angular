@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Provider;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -14,6 +15,16 @@ class ProviderSeeder extends Seeder
      */
     public function run()
     {
-        //
+        Provider::create([
+            'name' => 'provider 1',
+            'direccion' => 'direccion 1',
+            'contacto' => 8713574089
+        ]);
+
+        Provider::create([
+            'name' => 'provider 2',
+            'direccion' => 'direccion 2',
+            'contacto' => 8713574090
+        ]);
     }
 }
