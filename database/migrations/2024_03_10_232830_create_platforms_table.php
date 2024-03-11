@@ -15,7 +15,9 @@ return new class extends Migration
     {
         Schema::create('platforms', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->string('plataforma')->unique();
+            $table->dateTime('updated_at');
+            $table->dateTime('created_at');
         });
     }
 

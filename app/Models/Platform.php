@@ -8,4 +8,28 @@ use Illuminate\Database\Eloquent\Model;
 class Platform extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'plataforma',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+
+    ];
+
+    public function role()
+    {
+        return $this->hasMany(videogamePlatform::class);
+    }
 }
