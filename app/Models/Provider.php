@@ -9,7 +9,7 @@ class Provider extends Model
 {
     use HasFactory;
 
-    protected $hidden = [
+    protected $fillable = [
         'name',
         'direccion',
         'contacto'

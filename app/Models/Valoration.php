@@ -9,7 +9,7 @@ class Valoration extends Model
 {
     use HasFactory;
 
-    protected $hidden = [
+    protected $fillable = [
         'user_id',
         'videogame_id',
         'estrellas'

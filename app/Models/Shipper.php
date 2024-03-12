@@ -9,7 +9,7 @@ class Shipper extends Model
 {
     use HasFactory;
 
-    protected $hidden = [
+    protected $fillable = [
         'name',
         'direccion',
         'email_contacto'

@@ -9,7 +9,7 @@ class State extends Model
 {
     use HasFactory;
 
-    protected $hidden = [
+    protected $fillable = [
         'estado'
     ];
 

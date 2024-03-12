@@ -9,7 +9,7 @@ class orderDetail extends Model
 {
     use HasFactory;
 
-    protected $hidden = [
+    protected $fillable = [
         'order_id',
         'videogame_id',
         'quantity',
