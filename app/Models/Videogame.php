@@ -11,6 +11,7 @@ class Videogame extends Model
 
     protected $fillable = [
         'nombre',
+        'genre_id',
         'unitPrice',
         'description',
         'inStock',
