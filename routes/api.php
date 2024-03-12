@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProvidersController;
 use App\Http\Controllers\ShippersController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\ValorationsController;
 use App\Http\Controllers\VideogamesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -47,5 +48,13 @@ Route::get('/providers', [ProvidersController::class, 'index']);
 Route::post('/providers', [ProvidersController::class, 'store']);
 Route::put('/providers/{id}', [ProvidersController::class, 'update']);
 Route::delete('/providers/{id}', [ProvidersController::class, 'destroy']);
+
+Route::get('/valorations', [ValorationsController::class, 'index']);
+Route::post('/valorations', [ValorationsController::class, 'store']);
+
+// esta está curiosa, porque, debe recibir el id del juego, ok, pero cómo hago que ubique al user, una forma sería, obvio ubica al user con su token, sí, y al yo actualizar como usuario le pico al juego y me muestra mi valoración, ahí yo ya estoy en un usaurio y un juego, ya solo actualizo, entonces recibo como tal ambos campos, pero si es así, yo en la ruta debo recibir solo el id del juego y el del usuario, no hay de otra, debo recibir ambos, entonces si recibo ambos, ya puedo actualizar, necesito ambos id para actualizar
+
+// SOLO ME FALTA ESTE ACTUALIZAR PARA VALORACIONES
+Route::put('/valorations/{user_id}/{videogame_id}', [ValorationsController::class, 'update']);
 
 // invitado nomas puede ver cosas pero nada mas, cliente puede ver, pero solo agregar y modificar
