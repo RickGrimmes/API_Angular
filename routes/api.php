@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\ProvidersController;
+use App\Http\Controllers\ShippersController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\VideogamesController;
 use Illuminate\Http\Request;
@@ -24,6 +26,7 @@ Route::resource('User',UsersController::class);
 // index solo es llamar a todos los juegos
 Route::get('/videogames', [VideogamesController::class, 'index']);
 // findOne busca según el id, osea solo muestra 1 juego, aquí puedo meterle mas cositas de otras tablas
+// quizá a quí meta lo de valoraciones o vp y vplat
 Route::get('/videogames/{id}', [VideogamesController::class, 'findOne']);
 
 // crear nuevo juego, pide todo lo que se necesita para crearlo
@@ -35,5 +38,14 @@ Route::put('/videogames/{id}', [VideogamesController::class, 'update']);
 // elimina el juego en base a la id, la ruta requiere de la id, solo eso necesita
 Route::delete('/videogames/{id}', [VideogamesController::class, 'destroy']);
 
+Route::get('/shippers', [ShippersController::class, 'index']);
+Route::post('/shippers', [ShippersController::class, 'store']);
+Route::put('/shippers/{id}', [ShippersController::class, 'update']);
+Route::delete('/shippers/{id}', [ShippersController::class, 'destroy']);
+
+Route::get('/providers', [ProvidersController::class, 'index']);
+Route::post('/providers', [ProvidersController::class, 'store']);
+Route::put('/providers/{id}', [ProvidersController::class, 'update']);
+Route::delete('/providers/{id}', [ProvidersController::class, 'destroy']);
 
 // invitado nomas puede ver cosas pero nada mas, cliente puede ver, pero solo agregar y modificar
