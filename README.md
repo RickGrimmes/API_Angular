@@ -30,6 +30,7 @@ php artisan migrate --path=/database/migrations/2024_03_10_233040_create_genres_
 php artisan migrate --path=/database/migrations/2024_03_10_233238_create_shippers_table.php  
 php artisan migrate --path=/database/migrations/2024_03_10_233222_create_states_table.php   
 php artisan migrate --path=/database/migrations/2024_03_10_232830_create_platforms_table.php 
+
 php artisan migrate --path=/database/migrations/2024_03_10_233003_create_providers_table.php    
 php artisan migrate --path=/database/migrations/2024_03_10_233144_create_orders_table.php    
 php artisan migrate --path=/database/migrations/2024_03_10_232750_create_videogames_table.php  
