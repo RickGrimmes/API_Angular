@@ -21,4 +21,19 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::resource('User',UsersController::class);
 
+// index solo es llamar a todos los juegos
 Route::get('/videogames', [VideogamesController::class, 'index']);
+// findOne busca según el id, osea solo muestra 1 juego, aquí puedo meterle mas cositas de otras tablas
+Route::get('/videogames/{id}', [VideogamesController::class, 'findOne']);
+
+// crear nuevo juego, pide todo lo que se necesita para crearlo
+Route::post('/videogames', [VideogamesController::class, 'store']);
+
+// actualizar el juego, en la ruta se ocupa una id para que sepa cuál juego es, y ya según lo que le quieras mover
+Route::put('/videogames/{id}', [VideogamesController::class, 'update']);
+
+// elimina el juego en base a la id, la ruta requiere de la id, solo eso necesita
+Route::delete('/videogames/{id}', [VideogamesController::class, 'destroy']);
+
+
+// invitado nomas puede ver cosas pero nada mas, cliente puede ver, pero solo agregar y modificar
