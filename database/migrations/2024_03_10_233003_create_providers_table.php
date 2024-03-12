@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre');
             $table->string('direccion');
-            $table->integer('contacto')->unique();
+            $table->string('contacto')->unique();
             $table->dateTime('updated_at');
             $table->dateTime('created_at');
         });

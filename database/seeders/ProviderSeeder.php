@@ -16,15 +16,15 @@ class ProviderSeeder extends Seeder
     public function run()
     {
         Provider::create([
-            'name' => 'provider 1',
+            'nombre' => 'provider 1',
             'direccion' => 'direccion 1',
-            'contacto' => 8713574089
+            'contacto' => '8713574089'
         ]);
 
         Provider::create([
-            'name' => 'provider 2',
+            'nombre' => 'provider 2',
             'direccion' => 'direccion 2',
-            'contacto' => 8713574090
+            'contacto' => '8713574090'
         ]);
     }
 }

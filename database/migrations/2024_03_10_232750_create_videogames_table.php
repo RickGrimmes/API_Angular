@@ -16,6 +16,11 @@ return new class extends Migration
         Schema::create('videogames', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
+            $table->foreignId('genre_id')->constrained();
+            $table->decimal('unitPrice');
+            $table->string('description');
+            $table->integer('inStock');
+            $table->decimal('discount')->default(0);
             $table->dateTime('updated_at');
             $table->dateTime('created_at');
         });

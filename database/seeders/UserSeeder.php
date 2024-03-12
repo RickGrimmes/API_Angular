@@ -40,7 +40,7 @@ class UserSeeder extends Seeder
             'name' => 'Robloxian Guy',
             'email' => 'robloxian@gmail.com',
             'password' => 'robloxian',
-            'role_id' => 2
+         //   'role_id' => 2
         ]);
     }
 }
