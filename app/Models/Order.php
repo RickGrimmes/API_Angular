@@ -8,4 +8,25 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     use HasFactory;
+
+    protected $hidden = [
+        'user_id',
+        'shipper_id',
+        'state_id'
+    ];
+
+    public function order()
+    {
+        return $this->hasMany(orderDetail::class);
+    }
+
+    public function orderBTM()
+    {
+        return $this->belongsToMany(Shipper::class);
+    }
+    
+    public function orderBTM1()
+    {
+        return $this->belongsToMany(State::class);
+    }
 }

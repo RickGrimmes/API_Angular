@@ -14,8 +14,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('videogame_platforms', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+            $table->foreignId('platform_id')->constrained();
+            $table->foreignId('videogame_id')->constrained();
+            $table->dateTime('updated_at');
+            $table->dateTime('created_at');
         });
     }
 

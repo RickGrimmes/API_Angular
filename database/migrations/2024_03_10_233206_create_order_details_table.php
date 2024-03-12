@@ -15,7 +15,12 @@ return new class extends Migration
     {
         Schema::create('order_details', function (Blueprint $table) {
             $table->id();
-            $table->timestamps();
+            $table->foreignId('order_id')->constrained();
+            $table->foreignId('videogame_id')->constrained();
+            $table->integer('quantity');
+            $table->decimal('totalPrice');
+            $table->dateTime('updated_at');
+            $table->dateTime('created_at');
         });
     }
 

@@ -19,9 +19,9 @@ return new class extends Migration
             $table->string('email')->unique(); 
             $table->string('password');
             $table->boolean('isActive')->default(false);
-            $table->foreignId('role_id')->constrained();
+            $table->foreignId('role_id')->default(2)->constrained();
             $table->dateTime('updated_at');
-            $table->dateTime('created_at');
+            $table->dateTime('created_at'); 
         });
     }
 

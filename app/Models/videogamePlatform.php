@@ -8,4 +8,19 @@ use Illuminate\Database\Eloquent\Model;
 class videogamePlatform extends Model
 {
     use HasFactory;
+
+    protected $hidden = [
+        'platform_id',
+        'videogame_id'
+    ];
+
+    public function videogamePlatformBTP()
+    {
+        return $this->belongsTo(Platform::class);
+    }
+
+    public function videogamePlatformBTV()
+    {
+        return $this->belongsTo(Videogame::class);
+    }
 }

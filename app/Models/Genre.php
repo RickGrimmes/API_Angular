@@ -7,5 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Genre extends Model
 {
-    use HasFactory;
+    protected $hidden = [
+        'name',
+        'description'
+    ];
+
+    public function videogames()
+    {
+        return $this->hasMany(Videogame::class);
+    }
 }
