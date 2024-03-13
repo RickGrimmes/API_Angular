@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('valorations', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('user_id')->constrained();
             $table->foreignId('videogame_id')->constrained();
             $table->integer('estrellas');

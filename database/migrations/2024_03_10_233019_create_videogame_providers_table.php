@@ -14,6 +14,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('videogame_providers', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('videogame_id')->constrained();
             $table->foreignId('provider_id')->constrained();
             $table->dateTime('updated_at');
