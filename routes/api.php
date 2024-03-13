@@ -6,6 +6,8 @@ use App\Http\Controllers\ProvidersController;
 use App\Http\Controllers\ShippersController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ValorationsController;
+use App\Http\Controllers\VideogamePlatformController;
+use App\Http\Controllers\VideogameProviderController;
 use App\Http\Controllers\VideogamesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
