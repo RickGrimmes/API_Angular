@@ -11,7 +11,7 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $order = Order::all();
+        $order = Order::with(['user','orderBTM','orderBTM1'])->get();
         if($order){
             return response()->json(['message' => 'Order ecncontradas: ',$order], 200);
         }

@@ -29,4 +29,9 @@ class Order extends Model
     {
         return $this->belongsToMany(State::class);
     }
+    public function user()
+{
+    return $this->belongsTo(User::class);
 }
+}
+
