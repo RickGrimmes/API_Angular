@@ -9,7 +9,7 @@ class videogamePlatform extends Model
 {
     use HasFactory;
 
-    protected $hidden = [
+    protected $fillable = [
         'platform_id',
         'videogame_id'
     ];

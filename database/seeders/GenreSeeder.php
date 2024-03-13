@@ -29,5 +29,15 @@ class GenreSeeder extends Seeder
             'name' => 'Terror',
             'description' => 'description 3'
         ]);
+
+        Genre::create([
+            'name' => 'FPS',
+            'description' => 'description 4'
+        ]);
+
+        Genre::create([
+            'name' => 'Multiplayer',
+            'description' => 'description 5'
+        ]);
     }
 }
