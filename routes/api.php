@@ -1,14 +1,11 @@
 <?php
 
-use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProvidersController;
 use App\Http\Controllers\ShippersController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ValorationsController;
-use App\Http\Controllers\VideogamePlatformController;
-use App\Http\Controllers\VideogameProviderController;
 use App\Http\Controllers\VideogamesController;
-use App\Models\videogamePlatform;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,13 +19,12 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
 Route::resource('User',UsersController::class);
 Route::resource('Order',OrderController::class);
-
 // index solo es llamar a todos los juegos
 Route::get('/videogames', [VideogamesController::class, 'index']);
 // findOne busca según el id, osea solo muestra 1 juego, aquí puedo meterle mas cositas de otras tablas
@@ -58,22 +54,8 @@ Route::get('/valorations', [ValorationsController::class, 'index']);
 Route::post('/valorations', [ValorationsController::class, 'store']);
 
 // esta está curiosa, porque, debe recibir el id del juego, ok, pero cómo hago que ubique al user, una forma sería, obvio ubica al user con su token, sí, y al yo actualizar como usuario le pico al juego y me muestra mi valoración, ahí yo ya estoy en un usaurio y un juego, ya solo actualizo, entonces recibo como tal ambos campos, pero si es así, yo en la ruta debo recibir solo el id del juego y el del usuario, no hay de otra, debo recibir ambos, entonces si recibo ambos, ya puedo actualizar, necesito ambos id para actualizar
+
+// SOLO ME FALTA ESTE ACTUALIZAR PARA VALORACIONES
 Route::put('/valorations/{user_id}/{videogame_id}', [ValorationsController::class, 'update']);
-
-Route::get('/videogamePlatforms', [VideogamePlatformController::class, 'index']);
-Route::get('/videogamePlatforms/v/{id}', [VideogamePlatformController::class, 'indexV']);
-Route::get('/videogamePlatforms/p/{id}', [VideogamePlatformController::class, 'indexP']);
-
-Route::post('/videogamePlatforms', [VideogamePlatformController::class, 'store']);
-Route::put('/videogamePlatforms/{platform_id}/{videogame_id}', [VideogamePlatformController::class, 'update']);
-
-
-
-Route::get('/videogameProviders', [VideogameProviderController::class, 'index']);
-Route::get('/videogameProviders/v/{id}', [VideogameProviderController::class, 'indexV']);
-Route::get('/videogameProviders/p/{id}', [VideogameProviderController::class, 'indexP']);
-
-Route::post('/videogameProviders', [VideogameProviderController::class, 'store']);
-Route::put('/videogameProviders/{videogame_id}/{provider_id}', [VideogameProviderController::class, 'update']);
 
 // invitado nomas puede ver cosas pero nada mas, cliente puede ver, pero solo agregar y modificar
