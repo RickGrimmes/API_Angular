@@ -6,6 +6,7 @@ use App\Http\Controllers\ShippersController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ValorationsController;
 use App\Http\Controllers\VideogamePlatformController;
+use App\Http\Controllers\VideogameProviderController;
 use App\Http\Controllers\VideogamesController;
 use App\Models\videogamePlatform;
 use Illuminate\Http\Request;
@@ -65,4 +66,14 @@ Route::get('/videogamePlatforms/p/{id}', [VideogamePlatformController::class, 'i
 
 Route::post('/videogamePlatforms', [VideogamePlatformController::class, 'store']);
 Route::put('/videogamePlatforms/{platform_id}/{videogame_id}', [VideogamePlatformController::class, 'update']);
+
+
+
+Route::get('/videogameProviders', [VideogameProviderController::class, 'index']);
+Route::get('/videogameProviders/v/{id}', [VideogameProviderController::class, 'indexV']);
+Route::get('/videogameProviders/p/{id}', [VideogameProviderController::class, 'indexP']);
+
+Route::post('/videogameProviders', [VideogameProviderController::class, 'store']);
+Route::put('/videogameProviders/{videogame_id}/{provider_id}', [VideogameProviderController::class, 'update']);
+
 // invitado nomas puede ver cosas pero nada mas, cliente puede ver, pero solo agregar y modificar
