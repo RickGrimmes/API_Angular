@@ -30,6 +30,12 @@ Route::resource('User',UsersController::class);
 Route::resource('Order',OrderController::class);
 
 
+Route::group(['middleware' => 'api',
+'prefix' => 'auth'
+], function ($router) {
+    Route::resource('User', UsersController::class);
+});
+
 //--------------------------------------------------------------------------------------------------------------------------
 // index solo es llamar a todos los juegos
 Route::get('/videogames', [VideogamesController::class, 'index']);

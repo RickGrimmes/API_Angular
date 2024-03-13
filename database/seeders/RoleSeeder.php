@@ -23,5 +23,9 @@ class RoleSeeder extends Seeder
         Role::create([
             'rol' => 'Cliente'
         ]);
+
+        Role::create([
+            'rol' => 'Visitante'
+        ]);
     }
 }

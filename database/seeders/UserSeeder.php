@@ -40,7 +40,21 @@ class UserSeeder extends Seeder
             'name' => 'Robloxian Guy',
             'email' => 'robloxian@gmail.com',
             'password' => 'robloxian',
-         //   'role_id' => 2
+            'role_id' => 2
+        ]);
+
+        User::create([
+            'name' => 'Visitante 1',
+            'email' => 'proaso@gmail.com',
+            'password' => 'password',
+            'role_id' => 3
+        ]);
+
+        User::create([
+            'name' => 'Visitante 2',
+            'email' => 'proaso2010@gmail.com',
+            'password' => 'password',
+            'role_id' => 3
         ]);
     }
 }

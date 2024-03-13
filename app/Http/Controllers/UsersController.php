@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Validator;
 
 class UsersController extends Controller
 {
-
     public function index()
     {
         $user = User::where('isActive', 1)->get();
@@ -21,6 +20,7 @@ class UsersController extends Controller
         }
         return response()->json(['message'=>'usuario no encontrado'], 404);
     }
+
     public function show($id)
     {
         $user = User::find($id);
@@ -30,6 +30,7 @@ class UsersController extends Controller
     
         return response()->json(['message'=>'usuario no encontrado'], 404);
     }
+
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -54,40 +55,41 @@ class UsersController extends Controller
         return response()->json($user, 201);
 
     }
+    
     public function update(Request $request, $id)
-{
-    $user = User::find($id);
-    if($user){
-    $validator = Validator::make($request->all(), [
+    {
+        $user = User::find($id);
+        if($user){
+        $validator = Validator::make($request->all(), [
         'name'=>'required|max:100|string',
         'email'=>'required|max:255|string|email|unique:'.User::class,
         'password'=>'max:100|string',
         'isActive'=>'max:100|string',
         'role_id'=>''
-    ]);
+        ]);
 
-    if ($validator->fails()) {
-        return response()->json($validator->errors(), 400);
-    }
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }
 
     
-    $user->update($request->all());
+        $user->update($request->all());
 
-    return response()->json($user, 200);
-}
-return response()->json(['message'=>'usuario no encontrado'], 404);
-}
-
-public function destroy($id)
-{
-    $user = User::find($id);
-
-    if($user){
-        $user->delete();
-        return response()->json(['message' => 'Usuario eliminado: ',$user], 200);
+        return response()->json($user, 200);
+        }
+        return response()->json(['message'=>'usuario no encontrado'], 404);
     }
 
-    return response()->json(['message'=>'usuario no encontrado'], 404);
-}
+    public function destroy($id)
+    {
+        $user = User::find($id);
+
+        if($user){
+            $user->delete();
+            return response()->json(['message' => 'Usuario eliminado: ',$user], 200);
+        }
+
+        return response()->json(['message'=>'usuario no encontrado'], 404);
+    }
 
 }
