@@ -12,10 +12,10 @@ class VideogamesController extends Controller
     {
         try 
         {
-            $videogame = Videogame::all();
+            $videogames = Videogame::all();
             return response()->json([
                 'status' => 'success',
-                'data' => $videogame,
+                'data' => $videogames,
             ], 200);
         } 
         catch (\Exception $e) 
@@ -52,7 +52,7 @@ class VideogamesController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'nombre' => 'required|string|min:2|max:200|unique:videogames',
+            'nombre' => 'required|string|min:2|max:200',
             'genre_id' => 'required|exists:genres,id', // Asegúrate de que el genero_id existe en la tabla generos
             'unitPrice' => 'required|numeric|min:0|',
             'description' => 'required|string|min:10',
@@ -61,8 +61,7 @@ class VideogamesController extends Controller
         ]);
 
         // Si la validación falla, devolver errores
-        if ($validator->fails()) 
-        {
+        if ($validator->fails()) {
         return response()->json([
             'status' => 'error',
             'message' => 'Error de validación',

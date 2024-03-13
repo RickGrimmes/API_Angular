@@ -15,8 +15,11 @@ class UsersController extends Controller
 
     public function index()
     {
-        $user=User::all();
-        return($user);
+        $user = User::where('isActive', 1)->get();
+        if($user){
+            return response()->json(['message' => 'Usuario ecncontrado: ',$user], 200);
+        }
+        return response()->json(['message'=>'usuario no encontrado'], 404);
     }
     public function show($id)
     {
@@ -53,6 +56,8 @@ class UsersController extends Controller
     }
     public function update(Request $request, $id)
 {
+    $user = User::find($id);
+    if($user){
     $validator = Validator::make($request->all(), [
         'name'=>'required|max:100|string',
         'email'=>'required|max:255|string|email|unique:'.User::class,
@@ -65,10 +70,12 @@ class UsersController extends Controller
         return response()->json($validator->errors(), 400);
     }
 
-    $user = User::find($id);
+    
     $user->update($request->all());
 
     return response()->json($user, 200);
+}
+return response()->json(['message'=>'usuario no encontrado'], 404);
 }
 
 public function destroy($id)

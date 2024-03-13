@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProvidersController;
 use App\Http\Controllers\ShippersController;
 use App\Http\Controllers\UsersController;
@@ -23,6 +24,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::resource('User',UsersController::class);
+Route::resource('Order',OrderController::class);
 
 // index solo es llamar a todos los juegos
 Route::get('/videogames', [VideogamesController::class, 'index']);
