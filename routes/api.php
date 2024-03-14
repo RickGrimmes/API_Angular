@@ -26,11 +26,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+// hay que ver si a user le metemos algo para mostrar a los activos, lo dejo en 0 porque todos tienen el isactive false, pero debería mostrar los true
 Route::resource('User',UsersController::class);
 Route::resource('Order',OrderController::class);
 Route::resource('OrderDit',OrderDetailsController::class);
 
-// esta ruta falla, debo ver cómo hacer que jale, y ya que muestre bien como el index
 Route::get('OrderDit/{id}', [OrderDetailsController::class, 'show']);
 
 

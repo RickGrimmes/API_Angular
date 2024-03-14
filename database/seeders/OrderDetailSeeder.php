@@ -16,7 +16,7 @@ class OrderDetailSeeder extends Seeder
     public function run()
     {
         orderDetail::create([
-            'order_id' => 2,
+            'order_id' => 3,
             'videogame_id' => 1,
             'quantity' => 1,
             'totalPrice' => 500

@@ -16,7 +16,25 @@ class UsersController extends Controller
 {
     public function index()
     {
-        $user = User::where('isActive', 0)->get();
+        $users = User::with([
+            'role:id,rol'
+        ])->where('isActive', 0)
+        ->get();
+
+        $user = $users->map(function ($user)
+        {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'isActive' => $user->isActive,
+                'role' => $user->role->rol,
+                'code' => $user->code,
+                'updated_at' => $user->updated_at,
+                'created_at' => $user->created_at
+            ];
+        });
+
         if($user){
             return response()->json(['message' => 'Usuario ecncontrado: ',$user], 200);
         }
@@ -56,7 +74,25 @@ class UsersController extends Controller
 
     public function show($id)
     {
-        $user = User::find($id);
+        $users = User::with([
+            'role:id,rol'
+        ])->where('id', $id)
+        ->get();
+
+        $user = $users->map(function ($user)
+        {
+            return [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'isActive' => $user->isActive,
+                'role' => $user->role->rol,
+                'code' => $user->code,
+                'updated_at' => $user->updated_at,
+                'created_at' => $user->created_at
+            ];
+        });
+
         if($user){
             return response()->json(['message' => 'Usuario ecncontrado: ',$user], 200);
         }
