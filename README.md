@@ -39,6 +39,10 @@ php artisan migrate --path=/database/migrations/2024_03_10_232924_create_videoga
 php artisan migrate --path=/database/migrations/2024_03_10_233019_create_videogame_providers_table.php   
 php artisan migrate --path=/database/migrations/2024_03_10_233206_create_order_details_table.php  
 
+php artisan migrate --path=/database/migrations/2014_10_12_100000_create_password_resets_table.php
+php artisan migrate --path=/database/migrations/2019_08_19_000000_create_failed_jobs_table.php
+php artisan migrate --path=/database/migrations/2019_12_14_000001_create_personal_access_tokens_table.php
+
 AGREGADO EL DE VISITANTE Y OTROS USUARIOS QUE YA SON VISITANTES, IGUAL CORRANLOS
 
         Role::create([
