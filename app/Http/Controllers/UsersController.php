@@ -16,7 +16,7 @@ class UsersController extends Controller
 {
     public function index()
     {
-        $user = User::where('isActive', 1)->get();
+        $user = User::where('isActive', 0)->get();
         if($user){
             return response()->json(['message' => 'Usuario ecncontrado: ',$user], 200);
         }

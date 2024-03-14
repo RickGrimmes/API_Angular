@@ -14,12 +14,12 @@ class videogameProvider extends Model
         'provider_id'
     ];
 
-    public function videogameProviderBTV()
+    public function videogame()
     {
         return $this->belongsTo(Videogame::class);
     }
 
-    public function videogameProviderBTP()
+    public function provider()
     {
         return $this->belongsTo(Provider::class);
     }

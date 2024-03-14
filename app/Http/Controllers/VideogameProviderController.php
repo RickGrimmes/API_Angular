@@ -12,7 +12,21 @@ class VideogameProviderController extends Controller
     {
         try
         {
-            $videogameprov = videogameProvider::all();
+            $videogameprovs = videogameProvider::with([
+                'videogame:id,nombre',
+                'provider:id,nombre'
+            ])->get();
+
+            $videogameprov = $videogameprovs->map(function ($videogameprov)
+            {
+                return [
+                    'id' => $videogameprov->id,
+                    'videogame_name' => $videogameprov->videogame->nombre,
+                    'provider_name' => $videogameprov->provider->nombre,
+                    'updated_at' => $videogameprov->updated_at,
+                    'created_at' => $videogameprov->created_at
+                ];
+            });
 
             return response()->json([
                 'status' => 'success',
@@ -31,8 +45,22 @@ class VideogameProviderController extends Controller
 
     public function indexV($id)
     {
-        $videogameprov = videogameProvider::where('videogame_id', $id)
+        $videogameprovs = videogameProvider::with([
+            'provider:id,nombre',
+            'videogame:id,nombre'
+        ])->where('videogame_id', $id)
         ->get();
+
+        $videogameprov = $videogameprovs->map(function ($videogameprov) 
+        {
+            return [
+                'id' => $videogameprov->id,
+                'videogame_name' => $videogameprov->videogame->nombre,
+                'provider_name' => $videogameprov->provider->nombre,
+                'updated_at' => $videogameprov->updated_at,
+                'created_at' => $videogameprov->created_at
+            ];
+        });
 
         try
         {
@@ -53,9 +81,22 @@ class VideogameProviderController extends Controller
 
     public function indexP($id)
     {
-        $videogameprov = videogameProvider::where('provider_id', $id)
+        $videogameprovs = videogameProvider::with([
+            'provider:id,nombre',
+            'videogame:id,nombre'
+        ])->where('provider_id', $id)
         ->get();
 
+        $videogameprov = $videogameprovs->map(function ($videogameprov) 
+        {
+            return [
+                'id' => $videogameprov->id,
+                'videogame_name' => $videogameprov->videogame->nombre,
+                'provider_name' => $videogameprov->provider->nombre,
+                'updated_at' => $videogameprov->updated_at,
+                'created_at' => $videogameprov->created_at
+            ];
+        });
         try
         {
             return response()->json([

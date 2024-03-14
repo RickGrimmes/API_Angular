@@ -14,12 +14,12 @@ class videogamePlatform extends Model
         'videogame_id'
     ];
 
-    public function videogamePlatformBTP()
+    public function platform()
     {
         return $this->belongsTo(Platform::class);
     }
 
-    public function videogamePlatformBTV()
+    public function videogame()
     {
         return $this->belongsTo(Videogame::class);
     }

@@ -10,10 +10,24 @@ class ValorationsController extends Controller
 {
     public function index()
     {
+        $valorations = Valoration::with([
+            'user:id,name',
+            'videogame:id,nombre'
+        ])->get();
+
+        $valoration = $valorations->map(function ($valoration) {
+            return [
+                'id' => $valoration->id,
+                'user_name' => $valoration->user->name,
+                'videogame_name' => $valoration->videogame->nombre,
+                'estrellas' => $valoration->estrellas,
+                'updated_at' => $valoration->updated_at,
+                'created_at' => $valoration->created_at,
+            ];
+        });
+
         try
         {
-            $valoration = Valoration::all();
-
             return response()->json([
                 'status' => 'success',
                 'data' => $valoration

@@ -15,12 +15,12 @@ class Valoration extends Model
         'estrellas'
     ];
 
-    public function valorationBTU() 
+    public function user() 
     {
         return $this->belongsTo(User::class);
     }
 
-    public function valorationBTV() 
+    public function videogame() 
     {
         return $this->belongsTo(Videogame::class);
     }

@@ -13,7 +13,21 @@ class VideogamePlatformController extends Controller
     {
         try
         {
-            $videogameplat = videogamePlatform::all();
+            $videogameplats = videogamePlatform::with([
+                'platform:id,plataforma',
+                'videogame:id,nombre'
+            ])->get();
+
+            $videogameplat = $videogameplats->map(function ($videogameplat)
+            {
+                return [
+                    'id' => $videogameplat->id,
+                    'platform_name' => $videogameplat->platform->plataforma,
+                    'videogame_name' => $videogameplat->videogame->nombre,
+                    'updated_at' => $videogameplat->updated_at,
+                    'created_at' => $videogameplat->created_at
+                ];
+            });
 
             return response()->json([
                 'status' => 'success',
@@ -32,8 +46,22 @@ class VideogamePlatformController extends Controller
 
     public function indexV($id)
     {
-        $videogameplat = videogamePlatform::where('videogame_id', $id)
+        $videogameplats = videogamePlatform::with([
+            'platform:id,plataforma',
+            'videogame:id,nombre'
+        ])->where('videogame_id', $id)
         ->get();
+
+        $videogameplat = $videogameplats->map(function ($videogameplat) 
+        {
+            return [
+            'id' => $videogameplat->id,
+            'platform_name' => $videogameplat->platform->plataforma,
+            'videogame_name' => $videogameplat->videogame->nombre,
+            'updated_at' => $videogameplat->updated_at,
+            'created_at' => $videogameplat->created_at
+            ];
+        });
 
         try
         {
@@ -54,8 +82,22 @@ class VideogamePlatformController extends Controller
 
     public function indexP($id)
     {
-        $videogameplat = videogamePlatform::where('platform_id', $id)
+        $videogameplats = videogamePlatform::with([
+            'platform:id,plataforma',
+            'videogame:id,nombre'
+        ])->where('platform_id', $id)
         ->get();
+
+        $videogameplat = $videogameplats->map(function ($videogameplat) 
+        {
+            return [
+            'id' => $videogameplat->id,
+            'platform_name' => $videogameplat->platform->plataforma,
+            'videogame_name' => $videogameplat->videogame->nombre,
+            'updated_at' => $videogameplat->updated_at,
+            'created_at' => $videogameplat->created_at
+            ];
+        });
 
         try
         {

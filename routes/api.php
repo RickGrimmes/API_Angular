@@ -30,6 +30,9 @@ Route::resource('User',UsersController::class);
 Route::resource('Order',OrderController::class);
 Route::resource('OrderDit',OrderDetailsController::class);
 
+// esta ruta falla, debo ver cómo hacer que jale, y ya que muestre bien como el index
+Route::get('OrderDit/{id}', [OrderDetailsController::class, 'show']);
+
 
 Route::post('User', [UsersController::class, 'store']);
 Route::post('User/login', [UsersController::class, 'login']);

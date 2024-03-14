@@ -11,23 +11,34 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $order = Order::with([
-            'user' => function ($query) {
-                $query->select('id', 'name');   
-            },
-            'shipper' => function ($query) {
-                $query->select('id', 'name');
-            },
-            'state' => function ($query) {
-                $query->select('id', 'estado');
-            }
+        $orders = Order::with([
+            'user:id,name',
+            'shipper:id,name',
+            'state:id,estado'
         ])->get();
 
+        $order = $orders->map(function ($order) {
+            return [
+                'id' => $order->id,
+                'user_name' => $order->user->name,
+                'shipper_name' => $order->shipper->name,
+                'state' => $order->state->estado,
+                'updated_at' => $order->updated_at,
+                'created_at' => $order->created_at,
+            ];
+        });
+
         if($order){
-            return response()->json(['message' => 'Order ecncontradas: ',$order], 200);
+            return response()->json([
+                'message' => 'Order ecncontradas: ',
+                $order
+            ], 200);
         }
-    
-        return response()->json(['message'=>'Orders no encontradas'], 404);
+        
+        if ($order->isEmpty())
+        {
+            return response()->json(['message'=>'Orders no encontradas'], 404);
+        }
     }
 
     public function show($id)

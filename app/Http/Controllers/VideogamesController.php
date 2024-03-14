@@ -12,7 +12,25 @@ class VideogamesController extends Controller
     {
         try 
         {
-            $videogames = Videogame::all();
+            $VIDEOGAMES = Videogame::with([
+                'genre:id,name'
+            ])->get();
+
+            $videogames = $VIDEOGAMES->map(function ($videogames)
+            {
+                return [
+                    'id' => $videogames->id,
+                    'nombre' => $videogames->nombre,
+                    'genre' => $videogames->genre->name,
+                    'unitPrice' => $videogames->unitPrice,
+                    'description' => $videogames->description,
+                    'inStock' => $videogames->inStock,
+                    'discount' => $videogames->discount,
+                    'updated_at' => $videogames->updated_at,
+                    'created_at' => $videogames->created_at
+                ];
+            });
+
             return response()->json([
                 'status' => 'success',
                 'data' => $videogames,
@@ -30,7 +48,19 @@ class VideogamesController extends Controller
 
     public function findOne($id)
     {
-        $videogame = Videogame::findOrFail($id);
+        $videogames = Videogame::with(['genre:id,name'])->findOrFail($id);
+
+        $videogame = [
+            'id' => $videogames->id,
+            'nombre' => $videogames->nombre,
+            'genre' => $videogames->genre->name,
+            'unitPrice' => $videogames->unitPrice,
+            'description' => $videogames->description,
+            'inStock' => $videogames->inStock,
+            'discount' => $videogames->discount,
+            'updated_at' => $videogames->updated_at,
+            'created_at' => $videogames->created_at
+        ];
 
         try 
         {
