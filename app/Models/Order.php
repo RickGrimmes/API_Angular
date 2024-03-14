@@ -20,18 +20,18 @@ class Order extends Model
         return $this->hasMany(orderDetail::class);
     }
 
-    public function orderBTM()
+    public function shipper()
     {
-        return $this->belongsToMany(Shipper::class);
+        return $this->belongsTo(Shipper::class);
     }
     
-    public function orderBTM1()
+    public function state()
     {
-        return $this->belongsToMany(State::class);
+        return $this->belongsTo(State::class);
     }
     public function user()
-{
-    return $this->belongsTo(User::class);
-}
+    {
+        return $this->belongsTo(User::class);
+    }
 }
 

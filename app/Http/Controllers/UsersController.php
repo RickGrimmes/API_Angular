@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UsersController extends Controller
 {
@@ -19,6 +21,37 @@ class UsersController extends Controller
             return response()->json(['message' => 'Usuario ecncontrado: ',$user], 200);
         }
         return response()->json(['message'=>'usuario no encontrado'], 404);
+    }
+
+    public function login(Request $request)
+    {
+        $credenciales = $request->only('email', 'password');
+
+        try
+        {
+            if(!$token = JWTAuth::attempt($credenciales))
+            {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'credenciales invalidas'
+                ], 400);
+            }
+        }
+        catch(JWTException $e)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'token no existente'
+            ], 500);
+        }
+
+        $user = JWTAuth::user();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $user,
+            'token' => $token
+        ]);
     }
 
     public function show($id)
@@ -52,10 +85,16 @@ class UsersController extends Controller
             'isActive'=>$request->isActive,
             'role_id' => $request->role_id
         ]);
-        return response()->json($user, 201);
+
+        $token = JWTAuth::fromUser($user);
+
+        return response()->json([
+            'user' => $user,
+            'token' => $token
+        ], 201);
 
     }
-    
+
     public function update(Request $request, $id)
     {
         $user = User::find($id);

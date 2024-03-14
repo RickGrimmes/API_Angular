@@ -31,11 +31,8 @@ Route::resource('Order',OrderController::class);
 Route::resource('OrderDit',OrderDetailsController::class);
 
 
-Route::group(['middleware' => 'api',
-'prefix' => 'auth'
-], function ($router) {
-    Route::resource('User', UsersController::class);
-});
+Route::post('User', [UsersController::class, 'store']);
+Route::post('User/login', [UsersController::class, 'login']);
 
 //--------------------------------------------------------------------------------------------------------------------------
 // index solo es llamar a todos los juegos

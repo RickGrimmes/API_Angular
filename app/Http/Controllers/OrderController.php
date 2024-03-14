@@ -11,14 +11,25 @@ class OrderController extends Controller
 {
     public function index()
     {
-        $order = Order::with(['user','orderBTM','orderBTM1'])->get();
+        $order = Order::with([
+            'user' => function ($query) {
+                $query->select('id', 'name');   
+            },
+            'shipper' => function ($query) {
+                $query->select('id', 'name');
+            },
+            'state' => function ($query) {
+                $query->select('id', 'estado');
+            }
+        ])->get();
+
         if($order){
             return response()->json(['message' => 'Order ecncontradas: ',$order], 200);
         }
     
         return response()->json(['message'=>'Orders no encontradas'], 404);
-        
     }
+
     public function show($id)
     {
     $order=Order::where('user_id', $id)->get();
