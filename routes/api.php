@@ -27,7 +27,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // hay que ver si a user le metemos algo para mostrar a los activos, lo dejo en 0 porque todos tienen el isactive false, pero debería mostrar los true
-Route::resource('User',UsersController::class);
+//Route::resource('Users',UsersController::class);
+
 Route::resource('Order',OrderController::class);
 Route::resource('OrderDit',OrderDetailsController::class);
 
@@ -36,6 +37,18 @@ Route::get('OrderDit/{id}', [OrderDetailsController::class, 'show']);
 
 Route::post('User', [UsersController::class, 'store']);
 Route::post('User/login', [UsersController::class, 'login']);
+
+
+
+
+// protected routes
+
+Route::middleware('jwt.verify')->group(function(){
+    Route::get('User', [UsersController::class, 'index']);
+    Route::get('User/{id}', [UsersController::class, 'show']);
+    Route::put('User/{id}', [UsersController::class, 'update']);
+    Route::delete('User/{id}', [UsersController::class, 'destroy']);
+});
 
 //--------------------------------------------------------------------------------------------------------------------------
 // index solo es llamar a todos los juegos
