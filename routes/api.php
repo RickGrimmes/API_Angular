@@ -39,8 +39,6 @@ Route::post('User', [UsersController::class, 'store']);
 Route::post('User/login', [UsersController::class, 'login']);
 
 
-
-
 // protected routes
 
 Route::middleware('jwt.verify')->group(function(){
