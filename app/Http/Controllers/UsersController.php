@@ -140,7 +140,7 @@ class UsersController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'isActive'=>$request->isActive,
-            'role_id' => $request->role_id
+            'role_id' => $request->role_id ?? 2
         ]);
 
         return response()->json([
