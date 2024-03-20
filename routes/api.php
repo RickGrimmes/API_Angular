@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\LogsController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderDetailsController;
 use App\Http\Controllers\ProvidersController;
@@ -38,6 +39,7 @@ Route::get('OrderDit/{id}', [OrderDetailsController::class, 'show']);
 Route::post('User', [UsersController::class, 'store']);
 Route::post('User/login', [UsersController::class, 'login']);
 
+Route::get('Logs', [LogsController::class, 'index']);
 
 // protected routes
 

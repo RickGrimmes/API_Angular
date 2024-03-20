@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\RequestLog;
 use App\Models\User;
 use GuzzleHttp\Psr7\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UsersController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $authenticatedUser = Auth::user();
 
@@ -24,10 +26,19 @@ class UsersController extends Controller
             ], 403);
         }
 
+        DB::enableQueryLog();
+
         $users = User::with([
             'role:id,rol'
-        ])->where('isActive', 0)
+        ])->where('isActive', 1)
         ->get();
+        
+        // recibe el query
+        $querie = DB::getQueryLog();
+        // para que se vea bonito, porque si no lo da con cosas extra que ni al caso para mostrar
+        $queries = array_map(function ($query) {
+            return str_replace('?', '%s', $query['query']);
+        }, $querie);
 
         if ($users->isEmpty()) {
             return response()->json(['message' => 'No se encontraron usuarios activos'], 404);
@@ -48,8 +59,30 @@ class UsersController extends Controller
         });
 
         if($user){
+            RequestLog::create([
+                'user_id' => $authenticatedUser->id,
+                'user_name' => $authenticatedUser->name,
+                'user_email' => $authenticatedUser->email,
+                'http_verb' => $request->method(),
+                'route' => $request->path(),
+                'query' => json_encode($queries),
+                // 'data' => json_encode($user),
+                'data' => null,
+                'request_time'=> now()->toDateTimeString()
+            ]);
             return response()->json(['message' => 'Usuario ecncontrado: ',$user], 200);
         }
+        
+        RequestLog::create([
+            'user_id' => $authenticatedUser->id,
+            'user_name' => $authenticatedUser->name,
+            'user_email' => $authenticatedUser->email,
+            'http_verb' => $request->method(),
+            'route' => $request->path(),
+            'query' => json_encode($queries),
+            'data' => null,
+            'request_time'=> now()->toDateTimeString()
+        ]);
         return response()->json(['message'=>'usuario no encontrado'], 404);
     }
 
