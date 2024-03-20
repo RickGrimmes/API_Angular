@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GenreController;
 use App\Http\Controllers\LogsController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderDetailsController;
@@ -96,5 +97,8 @@ Route::get('/videogameProviders/v/{id}', [VideogameProviderController::class, 'i
 Route::get('/videogameProviders/p/{id}', [VideogameProviderController::class, 'indexP']);
 Route::post('/videogameProviders', [VideogameProviderController::class, 'store']);
 Route::put('/videogameProviders/{videogame_id}/{provider_id}', [VideogameProviderController::class, 'update']);
+
+//--------------------------------------------------------------------------------------------------------------------------
+Route::get('/genres', [GenreController::class, 'index']);
 
 // invitado nomas puede ver cosas pero nada mas, cliente puede ver, pero solo agregar y modificar
