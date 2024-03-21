@@ -14,7 +14,7 @@ class VideogamesController extends Controller
         {
             $VIDEOGAMES = Videogame::with([
                 'genre:id,name'
-            ])->get();
+            ])->where('inStock', '>=', 1)->get();
 
             $videogames = $VIDEOGAMES->map(function ($videogames)
             {
@@ -159,11 +159,11 @@ class VideogamesController extends Controller
 
     public function destroy($id)
     {
-        $videogame = Videogame::findOrFail($id);
-
         try
         {
-            $videogame->delete();
+            $videogame = Videogame::findOrFail($id);
+            $videogame->update(['inStock' => 0]);
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Videojuego eliminado'
