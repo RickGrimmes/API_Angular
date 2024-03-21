@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\RequestLog;
 use App\Models\User;
 use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -89,7 +91,8 @@ class UsersController extends Controller
     public function login(Request $request)
     {
         $credenciales = $request->only('email', 'password');
-
+    
+        
         try
         {
             if(!$token = JWTAuth::attempt($credenciales))
@@ -108,19 +111,14 @@ class UsersController extends Controller
             ], 500);
         }
 
-        $user = JWTAuth::user();
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $user,
-            'token' => $token
-        ]);
+        $this->sendEmail($request);
+        return response()->json("Credenciales validas, ingresa el codigo que se envio a tu correo");
     }
+    
 
     public function show($id)
     {
         $authenticatedUser = Auth::user();
-
         if ($authenticatedUser->id != $id)
         {
             return response()->json([
@@ -232,5 +230,45 @@ class UsersController extends Controller
 
         return response()->json(['message'=>'usuario no encontrado'], 404);
     }
+    public function sendEmail(Request $request)
+{
+    $codigo=rand(100000,999999);
+
+    
+    $user = User::where('email', $request->email)->first();
+    $user->code = $codigo;
+    $user->save();
+
+    $contenidoCorreo = "Su código de verificación es: $codigo";
+    Mail::raw($contenidoCorreo, function ($message) use ($request) {
+        $message->to($request->email)->subject('Código de verificación');
+    });
+
+    return response()->json('Correo electrónico enviado con éxito');
+}
+
+public function validarCodigo(Request $request)
+{
+    $user = User::where('email', $request->email)->first();
+    $codigoAlmacenado = $user->code;
+
+    $codigoSolicitud = $request->code;
+
+    if ($codigoAlmacenado && $codigoAlmacenado == $codigoSolicitud) {
+        $user->code = null;
+        $user->save();
+        $token = JWTAuth::fromUser($user);
+        return response()->json([
+            'status' => 'success',
+            'token' => $token]);
+        
+
+       
+    } else {
+       
+
+        return response()->json('Código inválido');
+    }
+}
 
 }

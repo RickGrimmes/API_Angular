@@ -39,6 +39,8 @@ Route::get('OrderDit/{id}', [OrderDetailsController::class, 'show']);
 
 Route::post('User', [UsersController::class, 'store']);
 Route::post('User/login', [UsersController::class, 'login']);
+Route::post('sendEmail', [UsersController::class, 'sendEmail']);
+Route::post('validarCodigo', [UsersController::class, 'validarCodigo']);
 
 Route::get('Logs', [LogsController::class, 'index']);
 
