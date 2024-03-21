@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('User', [UsersController::class, 'store']);
 Route::post('User/login', [UsersController::class, 'login']);
 
+Route::get('Logs', [LogsController::class, 'index']);
 
 // protected routes
 
@@ -53,7 +54,7 @@ Route::middleware('jwt.verify')->group(function(){
     
     Route::get('OrderDit/{id}', [OrderDetailsController::class, 'show']);
 
-    Route::get('Logs', [LogsController::class, 'index']);
+    
 
     //--------------------------------------------------------------------------------------------------------------------------
     // index solo es llamar a todos los juegos

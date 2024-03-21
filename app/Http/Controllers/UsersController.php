@@ -110,6 +110,17 @@ class UsersController extends Controller
 
         $user = JWTAuth::user();
 
+        RequestLog::create([
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'user_email' => $user->email,
+            'http_verb' => $request->method(),
+            'route' => $request->path(),
+            'query' => null,
+            'data' => 'SUCCESS',
+            'request_time' => now()->toDateTimeString()
+        ]);
+
         return response()->json([
             'status' => 'success',
             'data' => $user,
