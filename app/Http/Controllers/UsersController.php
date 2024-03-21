@@ -132,7 +132,21 @@ class UsersController extends Controller
     {
         try 
         {
+            $user = JWTAuth::user();
+
             JWTAuth::parseToken()->invalidate();
+
+            RequestLog::create([
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_email' => $user->email,
+                'http_verb' => $request->method(),
+                'route' => $request->path(),
+                'query' => null,
+                'data' => 'SUCCESS',
+                'request_time' => now()->toDateTimeString()
+            ]);
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Sesión cerrada correctamente :D'
@@ -149,19 +163,22 @@ class UsersController extends Controller
 
     public function show($id)
     {
+        // sacarr el usuario autenticado
         $authenticatedUser = Auth::user();
 
-        if ($authenticatedUser->id != $id)
-        {
-            return response()->json([
-                'message' => 'No tiene permiso para ver este usuario'
-            ], 403);
+        // checa si el usuario autenticado tiene permiso para acceder al usuario por id
+        if ($authenticatedUser->id != $id) {
+            return response()->json(['message' => 'No tiene permiso para ver este usuario'], 403);
         }
+
+        DB::enableQueryLog();
 
         $users = User::with([
             'role:id,rol'
         ])->where('id', $id)
         ->get();
+
+        $queries = DB::getQueryLog();
 
         $user = $users->map(function ($user)
         {
@@ -175,9 +192,19 @@ class UsersController extends Controller
                 'updated_at' => $user->updated_at,
                 'created_at' => $user->created_at
             ];
-        });
+        })->first();
 
         if($user){
+            RequestLog::create([
+                'user_id' => $id,
+                'user_name' => $user['name'],
+                'user_email' => $user['email'],
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => json_encode($queries), 
+                'data' => json_encode($user),
+                'request_time'=> now()->toDateTimeString()
+            ]);
             return response()->json(['message' => 'Usuario ecncontrado: ',$user], 200);
         }
     
@@ -198,6 +225,13 @@ class UsersController extends Controller
             return response()->json($validator->errors(), 400);
         }
   
+        
+        $querie = DB::getQueryLog();
+        // para que se vea bonito, porque si no lo da con cosas extra que ni al caso para mostrar
+        $queries = array_map(function ($query) {
+            return str_replace('?', '%s', $query['query']);
+        }, $querie);
+
        $user= User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -206,10 +240,21 @@ class UsersController extends Controller
             'role_id' => $request->role_id ?? 2
         ]);
 
+
+        RequestLog::create([
+            'user_id' => $user->id, 
+            'user_name' => $user->name, 
+            'user_email' => $user->email, 
+            'http_verb' => request()->method(),
+            'route' => request()->path(),
+            'query' => json_encode($queries), 
+            'data' => json_encode($user),
+            'request_time' => now()->toDateTimeString()
+        ]);
+
         return response()->json([
             'user' => $user
         ], 201);
-
     }
 
     public function update(Request $request, $id)

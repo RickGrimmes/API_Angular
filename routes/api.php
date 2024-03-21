@@ -32,12 +32,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 // hay que ver si a user le metemos algo para mostrar a los activos, lo dejo en 0 porque todos tienen el isactive false, pero debería mostrar los true
 //Route::resource('Users',UsersController::class);
 
-
+Route::get('Logs', [LogsController::class, 'index']);
 
 Route::post('User', [UsersController::class, 'store']);
 Route::post('User/login', [UsersController::class, 'login']);
-
-Route::get('Logs', [LogsController::class, 'index']);
 
 // protected routes
 
