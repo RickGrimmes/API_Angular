@@ -23,26 +23,21 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+*/
 
 // hay que ver si a user le metemos algo para mostrar a los activos, lo dejo en 0 porque todos tienen el isactive false, pero debería mostrar los true
 //Route::resource('Users',UsersController::class);
 
-Route::resource('Order',OrderController::class);
-Route::resource('OrderDit',OrderDetailsController::class);
-
-Route::get('OrderDit/{id}', [OrderDetailsController::class, 'show']);
-
+Route::get('Logs', [LogsController::class, 'index']);
 
 Route::post('User', [UsersController::class, 'store']);
 Route::post('User/login', [UsersController::class, 'login']);
 Route::post('sendEmail', [UsersController::class, 'sendEmail']);
 Route::post('validarCodigo', [UsersController::class, 'validarCodigo']);
-
-Route::get('Logs', [LogsController::class, 'index']);
 
 // protected routes
 
@@ -51,56 +46,65 @@ Route::middleware('jwt.verify')->group(function(){
     Route::get('User/{id}', [UsersController::class, 'show']);
     Route::put('User/{id}', [UsersController::class, 'update']);
     Route::delete('User/{id}', [UsersController::class, 'destroy']);
+
+    Route::post('User/logout', [UsersController::class, 'logout']);
+
+    Route::resource('Order',OrderController::class);
+    Route::resource('OrderDit',OrderDetailsController::class);
+    
+    Route::get('OrderDit/{id}', [OrderDetailsController::class, 'show']);
+
+    
+
+    //--------------------------------------------------------------------------------------------------------------------------
+    // index solo es llamar a todos los juegos
+    Route::get('/videogames', [VideogamesController::class, 'index']);
+    // findOne busca según el id, osea solo muestra 1 juego, aquí puedo meterle mas cositas de otras tablas
+    // quizá a quí meta lo de valoraciones o vp y vplat
+    Route::get('/videogames/{id}', [VideogamesController::class, 'findOne']);
+    // crear nuevo juego, pide todo lo que se necesita para crearlo
+    Route::post('/videogames', [VideogamesController::class, 'store']);
+    // actualizar el juego, en la ruta se ocupa una id para que sepa cuál juego es, y ya según lo que le quieras mover
+    Route::put('/videogames/{id}', [VideogamesController::class, 'update']);
+    // elimina el juego en base a la id, la ruta requiere de la id, solo eso necesita
+    Route::delete('/videogames/{id}', [VideogamesController::class, 'destroy']);
+
+    //--------------------------------------------------------------------------------------------------------------------------
+    Route::get('/shippers', [ShippersController::class, 'index']);
+    Route::post('/shippers', [ShippersController::class, 'store']);
+    Route::put('/shippers/{id}', [ShippersController::class, 'update']);
+    Route::delete('/shippers/{id}', [ShippersController::class, 'destroy']);
+
+    //--------------------------------------------------------------------------------------------------------------------------
+    Route::get('/providers', [ProvidersController::class, 'index']);
+    Route::post('/providers', [ProvidersController::class, 'store']);
+    Route::put('/providers/{id}', [ProvidersController::class, 'update']);
+    Route::delete('/providers/{id}', [ProvidersController::class, 'destroy']);
+
+    //--------------------------------------------------------------------------------------------------------------------------
+    Route::get('/valorations', [ValorationsController::class, 'index']);
+    Route::post('/valorations', [ValorationsController::class, 'store']);
+    // esta está curiosa, porque, debe recibir el id del juego, ok, pero cómo hago que ubique al user, una forma sería, obvio ubica al user con su token, sí, y al yo actualizar como usuario le pico al juego y me muestra mi valoración, ahí yo ya estoy en un usaurio y un juego, ya solo actualizo, entonces recibo como tal ambos campos, pero si es así, yo en la ruta debo recibir solo el id del juego y el del usuario, no hay de otra, debo recibir ambos, entonces si recibo ambos, ya puedo actualizar, necesito ambos id para actualizar
+
+    // SOLO ME FALTA ESTE ACTUALIZAR PARA VALORACIONES
+    Route::put('/valorations/{user_id}/{videogame_id}', [ValorationsController::class, 'update']);
+
+    //--------------------------------------------------------------------------------------------------------------------------
+    Route::get('/videogamePlatforms', [VideogamePlatformController::class, 'index']);
+    Route::get('/videogamePlatforms/v/{id}', [VideogamePlatformController::class, 'indexV']);
+    Route::get('/videogamePlatforms/p/{id}', [VideogamePlatformController::class, 'indexP']);
+    Route::post('/videogamePlatforms', [VideogamePlatformController::class, 'store']);
+    Route::put('/videogamePlatforms/{platform_id}/{videogame_id}', [VideogamePlatformController::class, 'update']);
+
+    //--------------------------------------------------------------------------------------------------------------------------
+    Route::get('/videogameProviders', [VideogameProviderController::class, 'index']);
+    Route::get('/videogameProviders/v/{id}', [VideogameProviderController::class, 'indexV']);
+    Route::get('/videogameProviders/p/{id}', [VideogameProviderController::class, 'indexP']);
+    Route::post('/videogameProviders', [VideogameProviderController::class, 'store']);
+    Route::put('/videogameProviders/{videogame_id}/{provider_id}', [VideogameProviderController::class, 'update']);
+
+    //--------------------------------------------------------------------------------------------------------------------------
+    Route::get('/genres', [GenreController::class, 'index']);
+
 });
-
-//--------------------------------------------------------------------------------------------------------------------------
-// index solo es llamar a todos los juegos
-Route::get('/videogames', [VideogamesController::class, 'index']);
-// findOne busca según el id, osea solo muestra 1 juego, aquí puedo meterle mas cositas de otras tablas
-// quizá a quí meta lo de valoraciones o vp y vplat
-Route::get('/videogames/{id}', [VideogamesController::class, 'findOne']);
-// crear nuevo juego, pide todo lo que se necesita para crearlo
-Route::post('/videogames', [VideogamesController::class, 'store']);
-// actualizar el juego, en la ruta se ocupa una id para que sepa cuál juego es, y ya según lo que le quieras mover
-Route::put('/videogames/{id}', [VideogamesController::class, 'update']);
-// elimina el juego en base a la id, la ruta requiere de la id, solo eso necesita
-Route::delete('/videogames/{id}', [VideogamesController::class, 'destroy']);
-
-//--------------------------------------------------------------------------------------------------------------------------
-Route::get('/shippers', [ShippersController::class, 'index']);
-Route::post('/shippers', [ShippersController::class, 'store']);
-Route::put('/shippers/{id}', [ShippersController::class, 'update']);
-Route::delete('/shippers/{id}', [ShippersController::class, 'destroy']);
-
-//--------------------------------------------------------------------------------------------------------------------------
-Route::get('/providers', [ProvidersController::class, 'index']);
-Route::post('/providers', [ProvidersController::class, 'store']);
-Route::put('/providers/{id}', [ProvidersController::class, 'update']);
-Route::delete('/providers/{id}', [ProvidersController::class, 'destroy']);
-
-//--------------------------------------------------------------------------------------------------------------------------
-Route::get('/valorations', [ValorationsController::class, 'index']);
-Route::post('/valorations', [ValorationsController::class, 'store']);
-// esta está curiosa, porque, debe recibir el id del juego, ok, pero cómo hago que ubique al user, una forma sería, obvio ubica al user con su token, sí, y al yo actualizar como usuario le pico al juego y me muestra mi valoración, ahí yo ya estoy en un usaurio y un juego, ya solo actualizo, entonces recibo como tal ambos campos, pero si es así, yo en la ruta debo recibir solo el id del juego y el del usuario, no hay de otra, debo recibir ambos, entonces si recibo ambos, ya puedo actualizar, necesito ambos id para actualizar
-
-// SOLO ME FALTA ESTE ACTUALIZAR PARA VALORACIONES
-Route::put('/valorations/{user_id}/{videogame_id}', [ValorationsController::class, 'update']);
-
-//--------------------------------------------------------------------------------------------------------------------------
-Route::get('/videogamePlatforms', [VideogamePlatformController::class, 'index']);
-Route::get('/videogamePlatforms/v/{id}', [VideogamePlatformController::class, 'indexV']);
-Route::get('/videogamePlatforms/p/{id}', [VideogamePlatformController::class, 'indexP']);
-Route::post('/videogamePlatforms', [VideogamePlatformController::class, 'store']);
-Route::put('/videogamePlatforms/{platform_id}/{videogame_id}', [VideogamePlatformController::class, 'update']);
-
-//--------------------------------------------------------------------------------------------------------------------------
-Route::get('/videogameProviders', [VideogameProviderController::class, 'index']);
-Route::get('/videogameProviders/v/{id}', [VideogameProviderController::class, 'indexV']);
-Route::get('/videogameProviders/p/{id}', [VideogameProviderController::class, 'indexP']);
-Route::post('/videogameProviders', [VideogameProviderController::class, 'store']);
-Route::put('/videogameProviders/{videogame_id}/{provider_id}', [VideogameProviderController::class, 'update']);
-
-//--------------------------------------------------------------------------------------------------------------------------
-Route::get('/genres', [GenreController::class, 'index']);
-
 // invitado nomas puede ver cosas pero nada mas, cliente puede ver, pero solo agregar y modificar

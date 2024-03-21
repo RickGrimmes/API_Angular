@@ -111,14 +111,73 @@ class UsersController extends Controller
             ], 500);
         }
 
-        $this->sendEmail($request);
-        return response()->json("Credenciales validas, ingresa el codigo que se envio a tu correo");
+        $user = JWTAuth::user();
+
+        RequestLog::create([
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'user_email' => $user->email,
+            'http_verb' => $request->method(),
+            'route' => $request->path(),
+            'query' => null,
+            'data' => 'SUCCESS',
+            'request_time' => now()->toDateTimeString()
+        ]);
+        $user = User::where('email', $request->email)->first();
+        $isActiver = $user->isActive;
+        if($isActiver==1)
+        {
+            $token = JWTAuth::fromUser($user);
+        return response()->json([
+            'status' => 'success',
+            'user'=>$user,
+            'token' => $token]);
+        }
+       $this->sendEmail($request);
+       return response()->json("Credenciales validas, se envio el correo");
     }
-    
+
+    public function logout (Request $request)
+    {
+        try 
+        {
+            $user = JWTAuth::user();
+
+            JWTAuth::parseToken()->invalidate();
+
+            RequestLog::create([
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_email' => $user->email,
+                'http_verb' => $request->method(),
+                'route' => $request->path(),
+                'query' => null,
+                'data' => 'SUCCESS',
+                'request_time' => now()->toDateTimeString()
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Sesión cerrada correctamente :D'
+            ], 200);
+        }   
+        catch (JWTException $e)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al cerrar la sesión :c'
+            ], 500);
+        } 
+    }
 
     public function show($id)
     {
+        // sacarr el usuario autenticado
         $authenticatedUser = Auth::user();
+
+        // checa si el usuario autenticado tiene permiso para acceder al usuario por id
+        if ($authenticatedUser->id != $id) {
+            return response()->json(['message' => 'No tiene permiso para ver este usuario'], 403);
         if ($authenticatedUser->id != $id)
         {
             return response()->json([
@@ -126,10 +185,14 @@ class UsersController extends Controller
             ], 403);
         }
 
+        DB::enableQueryLog();
+
         $users = User::with([
             'role:id,rol'
         ])->where('id', $id)
         ->get();
+
+        $queries = DB::getQueryLog();
 
         $user = $users->map(function ($user)
         {
@@ -143,14 +206,25 @@ class UsersController extends Controller
                 'updated_at' => $user->updated_at,
                 'created_at' => $user->created_at
             ];
-        });
+        })->first();
 
         if($user){
+            RequestLog::create([
+                'user_id' => $id,
+                'user_name' => $user['name'],
+                'user_email' => $user['email'],
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => json_encode($queries), 
+                'data' => json_encode($user),
+                'request_time'=> now()->toDateTimeString()
+            ]);
             return response()->json(['message' => 'Usuario ecncontrado: ',$user], 200);
         }
     
         return response()->json(['message'=>'usuario no encontrado'], 404);
     }
+}
 
     public function store(Request $request)
     {
@@ -166,6 +240,13 @@ class UsersController extends Controller
             return response()->json($validator->errors(), 400);
         }
   
+        
+        $querie = DB::getQueryLog();
+        // para que se vea bonito, porque si no lo da con cosas extra que ni al caso para mostrar
+        $queries = array_map(function ($query) {
+            return str_replace('?', '%s', $query['query']);
+        }, $querie);
+
        $user= User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -174,10 +255,21 @@ class UsersController extends Controller
             'role_id' => $request->role_id ?? 2
         ]);
 
+
+        RequestLog::create([
+            'user_id' => $user->id, 
+            'user_name' => $user->name, 
+            'user_email' => $user->email, 
+            'http_verb' => request()->method(),
+            'route' => request()->path(),
+            'query' => json_encode($queries), 
+            'data' => json_encode($user),
+            'request_time' => now()->toDateTimeString()
+        ]);
+
         return response()->json([
             'user' => $user
         ], 201);
-
     }
 
     public function update(Request $request, $id)
@@ -256,6 +348,7 @@ public function validarCodigo(Request $request)
 
     if ($codigoAlmacenado && $codigoAlmacenado == $codigoSolicitud) {
         $user->code = null;
+        $user->isActive = 1;
         $user->save();
         $token = JWTAuth::fromUser($user);
         return response()->json([
