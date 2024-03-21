@@ -117,6 +117,25 @@ class UsersController extends Controller
         ]);
     }
 
+    public function logout (Request $request)
+    {
+        try 
+        {
+            JWTAuth::parseToken()->invalidate();
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Sesión cerrada correctamente :D'
+            ], 200);
+        }   
+        catch (JWTException $e)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al cerrar la sesión :c'
+            ], 500);
+        } 
+    }
+
     public function show($id)
     {
         $authenticatedUser = Auth::user();

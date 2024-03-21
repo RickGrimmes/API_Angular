@@ -23,10 +23,11 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+*/
 
 // hay que ver si a user le metemos algo para mostrar a los activos, lo dejo en 0 porque todos tienen el isactive false, pero debería mostrar los true
 //Route::resource('Users',UsersController::class);
@@ -45,6 +46,7 @@ Route::middleware('jwt.verify')->group(function(){
     Route::put('User/{id}', [UsersController::class, 'update']);
     Route::delete('User/{id}', [UsersController::class, 'destroy']);
 
+    Route::post('User/logout', [UsersController::class, 'logout']);
 
     Route::resource('Order',OrderController::class);
     Route::resource('OrderDit',OrderDetailsController::class);
