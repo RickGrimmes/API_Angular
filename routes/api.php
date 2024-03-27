@@ -39,11 +39,11 @@ Route::post('User/login', [UsersController::class, 'login']);
 
 // protected routes
 
-Route::middleware('jwt.verify')->group(function(){
+// Route::middleware('jwt.verify')->group(function(){
     Route::get('User', [UsersController::class, 'index']);
     Route::get('User/{id}', [UsersController::class, 'show']);
-    Route::put('User/{id}', [UsersController::class, 'update']);
     Route::delete('User/{id}', [UsersController::class, 'destroy']);
+    Route::put('User/{id}', [UsersController::class, 'update']);
 
     Route::post('User/logout', [UsersController::class, 'logout']);
 
@@ -104,5 +104,5 @@ Route::middleware('jwt.verify')->group(function(){
     //--------------------------------------------------------------------------------------------------------------------------
     Route::get('/genres', [GenreController::class, 'index']);
 
-});
+// });
 // invitado nomas puede ver cosas pero nada mas, cliente puede ver, pero solo agregar y modificar

@@ -224,13 +224,6 @@ class UsersController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
-  
-        
-        $querie = DB::getQueryLog();
-        // para que se vea bonito, porque si no lo da con cosas extra que ni al caso para mostrar
-        $queries = array_map(function ($query) {
-            return str_replace('?', '%s', $query['query']);
-        }, $querie);
 
        $user= User::create([
             'name' => $request->name,
@@ -240,6 +233,11 @@ class UsersController extends Controller
             'role_id' => $request->role_id ?? 2
         ]);
 
+        $user->refresh();
+
+        $sqlQuery = "INSERT INTO `****`.`****` (`name`, `email`, `password`) VALUES ";
+        $sqlQuery .= "('" . $request->name . "', '" . $request->email . "', 'password');";
+    
 
         RequestLog::create([
             'user_id' => $user->id, 
@@ -247,7 +245,7 @@ class UsersController extends Controller
             'user_email' => $user->email, 
             'http_verb' => request()->method(),
             'route' => request()->path(),
-            'query' => json_encode($queries), 
+            'query' => json_encode($sqlQuery), 
             'data' => json_encode($user),
             'request_time' => now()->toDateTimeString()
         ]);
@@ -269,18 +267,32 @@ class UsersController extends Controller
         }
 
         $user = User::find($id);
+        
         if($user){
         $validator = Validator::make($request->all(), [
-        'email'=>'required|max:255|string|email|unique:'.User::class,
-        'password'=>'required|max:100|string',
+            'email'=>'max:255|string|email|unique:'.User::class,
+            'password'=>'required|max:100|string',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
-
     
         $user->update($request->all());
+
+        $queries = DB::getQueryLog();
+        $sqlQuery = end($queries)['query'];
+
+        RequestLog::create([
+            'user_id' => $id, 
+            'user_name' => $user->name, 
+            'user_email' => $user->email, 
+            'http_verb' => request()->method(),
+            'route' => request()->path(),
+            'query' => $sqlQuery,
+            'data' => json_encode($user),
+            'request_time' => now()->toDateTimeString()
+        ]);
 
         return response()->json($user, 200);
         }
