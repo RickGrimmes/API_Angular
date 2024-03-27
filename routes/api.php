@@ -36,6 +36,8 @@ Route::get('Logs', [LogsController::class, 'index']);
 
 Route::post('User', [UsersController::class, 'store']);
 Route::post('User/login', [UsersController::class, 'login']);
+Route::post('sendEmail', [UsersController::class, 'sendEmail']);
+Route::post('validarCodigo', [UsersController::class, 'validarCodigo']);
 
 // protected routes
 

@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\RequestLog;
 use App\Models\User;
 use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -89,7 +91,8 @@ class UsersController extends Controller
     public function login(Request $request)
     {
         $credenciales = $request->only('email', 'password');
-
+    
+        
         try
         {
             if(!$token = JWTAuth::attempt($credenciales))
@@ -120,12 +123,18 @@ class UsersController extends Controller
             'data' => 'SUCCESS',
             'request_time' => now()->toDateTimeString()
         ]);
-
+        $user = User::where('email', $request->email)->first();
+        $isActiver = $user->isActive;
+        if($isActiver==1)
+        {
+            $token = JWTAuth::fromUser($user);
         return response()->json([
             'status' => 'success',
-            'data' => $user,
-            'token' => $token
-        ]);
+            'user'=>$user,
+            'token' => $token]);
+        }
+       $this->sendEmail($request);
+       return response()->json("Credenciales validas, se envio el correo");
     }
 
     public function logout (Request $request)
@@ -169,6 +178,11 @@ class UsersController extends Controller
         // checa si el usuario autenticado tiene permiso para acceder al usuario por id
         if ($authenticatedUser->id != $id) {
             return response()->json(['message' => 'No tiene permiso para ver este usuario'], 403);
+        if ($authenticatedUser->id != $id)
+        {
+            return response()->json([
+                'message' => 'No tiene permiso para ver este usuario'
+            ], 403);
         }
 
         DB::enableQueryLog();
@@ -210,6 +224,7 @@ class UsersController extends Controller
     
         return response()->json(['message'=>'usuario no encontrado'], 404);
     }
+}
 
     public function store(Request $request)
     {
@@ -319,5 +334,46 @@ class UsersController extends Controller
 
         return response()->json(['message'=>'usuario no encontrado'], 404);
     }
+    public function sendEmail(Request $request)
+{
+    $codigo=rand(100000,999999);
+
+    
+    $user = User::where('email', $request->email)->first();
+    $user->code = $codigo;
+    $user->save();
+
+    $contenidoCorreo = "Su código de verificación es: $codigo";
+    Mail::raw($contenidoCorreo, function ($message) use ($request) {
+        $message->to($request->email)->subject('Código de verificación');
+    });
+
+    return response()->json('Correo electrónico enviado con éxito');
+}
+
+public function validarCodigo(Request $request)
+{
+    $user = User::where('email', $request->email)->first();
+    $codigoAlmacenado = $user->code;
+
+    $codigoSolicitud = $request->code;
+
+    if ($codigoAlmacenado && $codigoAlmacenado == $codigoSolicitud) {
+        $user->code = null;
+        $user->isActive = 1;
+        $user->save();
+        $token = JWTAuth::fromUser($user);
+        return response()->json([
+            'status' => 'success',
+            'token' => $token]);
+        
+
+       
+    } else {
+       
+
+        return response()->json('Código inválido');
+    }
+}
 
 }
