@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit061e9c4dede8b3a8030ccd70b4c26ed9
+class ComposerStaticInit0f6a552125b9c5898255f904a5fe925a
 {
     public static $files = array (
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
@@ -372,8 +372,8 @@ class ComposerStaticInit061e9c4dede8b3a8030ccd70b4c26ed9
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-factory/src',
-            1 => __DIR__ . '/..' . '/psr/http-message/src',
+            0 => __DIR__ . '/..' . '/psr/http-message/src',
+            1 => __DIR__ . '/..' . '/psr/http-factory/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -574,6 +574,8 @@ class ComposerStaticInit061e9c4dede8b3a8030ccd70b4c26ed9
         'App\\Console\\Kernel' => __DIR__ . '/../..' . '/app/Console/Kernel.php',
         'App\\Exceptions\\Handler' => __DIR__ . '/../..' . '/app/Exceptions/Handler.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
+        'App\\Http\\Controllers\\GenreController' => __DIR__ . '/../..' . '/app/Http/Controllers/GenreController.php',
+        'App\\Http\\Controllers\\LogsController' => __DIR__ . '/../..' . '/app/Http/Controllers/LogsController.php',
         'App\\Http\\Controllers\\OrderController' => __DIR__ . '/../..' . '/app/Http/Controllers/OrderController.php',
         'App\\Http\\Controllers\\OrderDetailsController' => __DIR__ . '/../..' . '/app/Http/Controllers/OrderDetailsController.php',
         'App\\Http\\Controllers\\ProvidersController' => __DIR__ . '/../..' . '/app/Http/Controllers/ProvidersController.php',
@@ -598,6 +600,7 @@ class ComposerStaticInit061e9c4dede8b3a8030ccd70b4c26ed9
         'App\\Models\\Order' => __DIR__ . '/../..' . '/app/Models/Order.php',
         'App\\Models\\Platform' => __DIR__ . '/../..' . '/app/Models/Platform.php',
         'App\\Models\\Provider' => __DIR__ . '/../..' . '/app/Models/Provider.php',
+        'App\\Models\\RequestLog' => __DIR__ . '/../..' . '/app/Models/RequestLog.php',
         'App\\Models\\Role' => __DIR__ . '/../..' . '/app/Models/Role.php',
         'App\\Models\\Shipper' => __DIR__ . '/../..' . '/app/Models/Shipper.php',
         'App\\Models\\State' => __DIR__ . '/../..' . '/app/Models/State.php',
@@ -6235,9 +6238,9 @@ class ComposerStaticInit061e9c4dede8b3a8030ccd70b4c26ed9
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit061e9c4dede8b3a8030ccd70b4c26ed9::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit061e9c4dede8b3a8030ccd70b4c26ed9::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit061e9c4dede8b3a8030ccd70b4c26ed9::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit0f6a552125b9c5898255f904a5fe925a::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit0f6a552125b9c5898255f904a5fe925a::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit0f6a552125b9c5898255f904a5fe925a::$classMap;
 
         }, null, ClassLoader::class);
     }
