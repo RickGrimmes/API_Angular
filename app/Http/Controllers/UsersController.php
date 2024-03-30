@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\RequestLog;
 use App\Models\User;
 use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -89,7 +91,8 @@ class UsersController extends Controller
     public function login(Request $request)
     {
         $credenciales = $request->only('email', 'password');
-
+    
+        
         try
         {
             if(!$token = JWTAuth::attempt($credenciales))
@@ -120,19 +123,39 @@ class UsersController extends Controller
             'data' => 'SUCCESS',
             'request_time' => now()->toDateTimeString()
         ]);
-
+        $user = User::where('email', $request->email)->first();
+        $isActiver = $user->isActive;
+        if($isActiver==1)
+        {
+            $token = JWTAuth::fromUser($user);
         return response()->json([
             'status' => 'success',
-            'data' => $user,
-            'token' => $token
-        ]);
+            'user'=>$user,
+            'token' => $token]);
+        }
+       $this->sendEmail($request);
+       return response()->json("Credenciales validas, se envio el correo");
     }
 
     public function logout (Request $request)
     {
         try 
         {
+            $user = JWTAuth::user();
+
             JWTAuth::parseToken()->invalidate();
+
+            RequestLog::create([
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_email' => $user->email,
+                'http_verb' => $request->method(),
+                'route' => $request->path(),
+                'query' => null,
+                'data' => 'SUCCESS',
+                'request_time' => now()->toDateTimeString()
+            ]);
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Sesión cerrada correctamente :D'
@@ -149,8 +172,12 @@ class UsersController extends Controller
 
     public function show($id)
     {
+        // sacarr el usuario autenticado
         $authenticatedUser = Auth::user();
 
+        // checa si el usuario autenticado tiene permiso para acceder al usuario por id
+        if ($authenticatedUser->id != $id) {
+            return response()->json(['message' => 'No tiene permiso para ver este usuario'], 403);
         if ($authenticatedUser->id != $id)
         {
             return response()->json([
@@ -158,10 +185,14 @@ class UsersController extends Controller
             ], 403);
         }
 
+        DB::enableQueryLog();
+
         $users = User::with([
             'role:id,rol'
         ])->where('id', $id)
         ->get();
+
+        $queries = DB::getQueryLog();
 
         $user = $users->map(function ($user)
         {
@@ -175,14 +206,25 @@ class UsersController extends Controller
                 'updated_at' => $user->updated_at,
                 'created_at' => $user->created_at
             ];
-        });
+        })->first();
 
         if($user){
+            RequestLog::create([
+                'user_id' => $id,
+                'user_name' => $user['name'],
+                'user_email' => $user['email'],
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => json_encode($queries), 
+                'data' => json_encode($user),
+                'request_time'=> now()->toDateTimeString()
+            ]);
             return response()->json(['message' => 'Usuario ecncontrado: ',$user], 200);
         }
     
         return response()->json(['message'=>'usuario no encontrado'], 404);
     }
+}
 
     public function store(Request $request)
     {
@@ -197,7 +239,7 @@ class UsersController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
-  
+
        $user= User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -206,10 +248,26 @@ class UsersController extends Controller
             'role_id' => $request->role_id ?? 2
         ]);
 
+        $user->refresh();
+
+        $sqlQuery = "INSERT INTO `****`.`****` (`name`, `email`, `password`) VALUES ";
+        $sqlQuery .= "('" . $request->name . "', '" . $request->email . "', 'password');";
+    
+
+        RequestLog::create([
+            'user_id' => $user->id, 
+            'user_name' => $user->name, 
+            'user_email' => $user->email, 
+            'http_verb' => request()->method(),
+            'route' => request()->path(),
+            'query' => json_encode($sqlQuery), 
+            'data' => json_encode($user),
+            'request_time' => now()->toDateTimeString()
+        ]);
+
         return response()->json([
             'user' => $user
         ], 201);
-
     }
 
     public function update(Request $request, $id)
@@ -224,18 +282,32 @@ class UsersController extends Controller
         }
 
         $user = User::find($id);
+        
         if($user){
         $validator = Validator::make($request->all(), [
-        'email'=>'required|max:255|string|email|unique:'.User::class,
-        'password'=>'required|max:100|string',
+            'email'=>'max:255|string|email|unique:'.User::class,
+            'password'=>'required|max:100|string',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
-
     
         $user->update($request->all());
+
+        $queries = DB::getQueryLog();
+        $sqlQuery = end($queries)['query'];
+
+        RequestLog::create([
+            'user_id' => $id, 
+            'user_name' => $user->name, 
+            'user_email' => $user->email, 
+            'http_verb' => request()->method(),
+            'route' => request()->path(),
+            'query' => $sqlQuery,
+            'data' => json_encode($user),
+            'request_time' => now()->toDateTimeString()
+        ]);
 
         return response()->json($user, 200);
         }
@@ -262,5 +334,46 @@ class UsersController extends Controller
 
         return response()->json(['message'=>'usuario no encontrado'], 404);
     }
+    public function sendEmail(Request $request)
+{
+    $codigo=rand(100000,999999);
+
+    
+    $user = User::where('email', $request->email)->first();
+    $user->code = $codigo;
+    $user->save();
+
+    $contenidoCorreo = "Su código de verificación es: $codigo";
+    Mail::raw($contenidoCorreo, function ($message) use ($request) {
+        $message->to($request->email)->subject('Código de verificación');
+    });
+
+    return response()->json('Correo electrónico enviado con éxito');
+}
+
+public function validarCodigo(Request $request)
+{
+    $user = User::where('email', $request->email)->first();
+    $codigoAlmacenado = $user->code;
+
+    $codigoSolicitud = $request->code;
+
+    if ($codigoAlmacenado && $codigoAlmacenado == $codigoSolicitud) {
+        $user->code = null;
+        $user->isActive = 1;
+        $user->save();
+        $token = JWTAuth::fromUser($user);
+        return response()->json([
+            'status' => 'success',
+            'token' => $token]);
+        
+
+       
+    } else {
+       
+
+        return response()->json('Código inválido');
+    }
+}
 
 }
