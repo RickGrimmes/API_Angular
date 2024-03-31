@@ -176,9 +176,7 @@ class UsersController extends Controller
         $authenticatedUser = Auth::user();
 
         // checa si el usuario autenticado tiene permiso para acceder al usuario por id
-        if ($authenticatedUser->id != $id) {
-            return response()->json(['message' => 'No tiene permiso para ver este usuario'], 403);
-        if ($authenticatedUser->id != $id)
+        if ($authenticatedUser->id != $id) 
         {
             return response()->json([
                 'message' => 'No tiene permiso para ver este usuario'
@@ -224,7 +222,6 @@ class UsersController extends Controller
     
         return response()->json(['message'=>'usuario no encontrado'], 404);
     }
-}
 
     public function store(Request $request)
     {
@@ -252,7 +249,6 @@ class UsersController extends Controller
 
         $sqlQuery = "INSERT INTO `****`.`****` (`name`, `email`, `password`) VALUES ";
         $sqlQuery .= "('" . $request->name . "', '" . $request->email . "', 'password');";
-    
 
         RequestLog::create([
             'user_id' => $user->id, 
@@ -272,28 +268,22 @@ class UsersController extends Controller
 
     public function update(Request $request, $id)
     {
-        $authenticatedUser = Auth::user();
-
-        if ($authenticatedUser->id != $id)
-        {
-            return response()->json([
-                'message' => 'No tiene permiso para acceder a este usuario'
-            ], 403);
-        }
-
         $user = User::find($id);
         
         if($user){
         $validator = Validator::make($request->all(), [
             'email'=>'max:255|string|email|unique:'.User::class,
-            'password'=>'required|max:100|string',
+            'password'=>'max:100|string',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 400);
         }
     
-        $user->update($request->all());
+        $user->fill($request->all())->save();
+
+        DB::enableQueryLog();
+        $user = User::find($id);
 
         $queries = DB::getQueryLog();
         $sqlQuery = end($queries)['query'];
@@ -316,7 +306,7 @@ class UsersController extends Controller
 
     public function destroy($id)
     {
-        $authenticatedUser = Auth::user();
+       /*  $authenticatedUser = Auth::user();
 
         if ($authenticatedUser->id != $id)
         {
@@ -324,56 +314,75 @@ class UsersController extends Controller
                 'message' => 'No tiene permiso para acceder a este usuario'
             ], 403);
         }
-
+*/
         $user = User::find($id);
 
         if($user){
+            DB::enableQueryLog();
+
             $user->delete();
+            
+            //$user = User::find($id);
+
+            $queries = DB::getQueryLog();
+            $sqlQuery = end($queries)['query'];
+
+            RequestLog::create([
+                'user_id' => $id, 
+                'user_name' => $user->name ?? null, 
+                'user_email' => $user->email ?? null, 
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => $sqlQuery,
+                'data' => json_encode($user),
+                'request_time' => now()->toDateTimeString()
+            ]);
+            
             return response()->json(['message' => 'Usuario eliminado: ',$user], 200);
         }
-
         return response()->json(['message'=>'usuario no encontrado'], 404);
     }
+
     public function sendEmail(Request $request)
-{
-    $codigo=rand(100000,999999);
+    {
+        $codigo=rand(100000,999999);
 
-    
-    $user = User::where('email', $request->email)->first();
-    $user->code = $codigo;
-    $user->save();
-
-    $contenidoCorreo = "Su código de verificación es: $codigo";
-    Mail::raw($contenidoCorreo, function ($message) use ($request) {
-        $message->to($request->email)->subject('Código de verificación');
-    });
-
-    return response()->json('Correo electrónico enviado con éxito');
-}
-
-public function validarCodigo(Request $request)
-{
-    $user = User::where('email', $request->email)->first();
-    $codigoAlmacenado = $user->code;
-
-    $codigoSolicitud = $request->code;
-
-    if ($codigoAlmacenado && $codigoAlmacenado == $codigoSolicitud) {
-        $user->code = null;
-        $user->isActive = 1;
+        
+        $user = User::where('email', $request->email)->first();
+        $user->code = $codigo;
         $user->save();
-        $token = JWTAuth::fromUser($user);
-        return response()->json([
-            'status' => 'success',
-            'token' => $token]);
+
+        $contenidoCorreo = "Su código de verificación es: $codigo";
+        Mail::raw($contenidoCorreo, function ($message) use ($request) {
+            $message->to($request->email)->subject('Código de verificación');
+        });
+
+        return response()->json('Correo electrónico enviado con éxito');
+    }
+
+    public function validarCodigo(Request $request)
+    {
+        $user = User::where('email', $request->email)->first();
+        $codigoAlmacenado = $user->code;
+
+        $codigoSolicitud = $request->code;
+
+        if ($codigoAlmacenado && $codigoAlmacenado == $codigoSolicitud) {
+            $user->code = null;
+            $user->isActive = 1;
+            $user->save();
+            $token = JWTAuth::fromUser($user);
+            return response()->json([
+                'status' => 'success',
+                'token' => $token]);
+            
+
+        
+        } else {
         
 
-       
-    } else {
-       
-
-        return response()->json('Código inválido');
+            return response()->json('Código inválido');
+        }
     }
-}
 
 }

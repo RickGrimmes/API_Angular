@@ -34,20 +34,21 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('Logs', [LogsController::class, 'index']);
 
-Route::post('User', [UsersController::class, 'store']);
-Route::post('User/login', [UsersController::class, 'login']);
 Route::post('sendEmail', [UsersController::class, 'sendEmail']);
 Route::post('validarCodigo', [UsersController::class, 'validarCodigo']);
+
+Route::post('User', [UsersController::class, 'store']); // 1
+Route::post('User/login', [UsersController::class, 'login']); // 1
 
 // protected routes
 
 // Route::middleware('jwt.verify')->group(function(){
-    Route::get('User', [UsersController::class, 'index']);
-    Route::get('User/{id}', [UsersController::class, 'show']);
-    Route::delete('User/{id}', [UsersController::class, 'destroy']);
+    Route::get('User', [UsersController::class, 'index']); // 1
+    Route::get('User/{id}', [UsersController::class, 'show']); // 1
+    Route::delete('User/{id}', [UsersController::class, 'destroy']); // 1
     Route::put('User/{id}', [UsersController::class, 'update']);
 
-    Route::post('User/logout', [UsersController::class, 'logout']);
+    Route::post('User/logout', [UsersController::class, 'logout']); // 1
 
     Route::resource('Order',OrderController::class);
     Route::resource('OrderDit',OrderDetailsController::class);
