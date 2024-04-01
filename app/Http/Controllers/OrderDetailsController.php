@@ -4,13 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\orderDetail;
+use App\Models\RequestLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
-
+ 
 class OrderDetailsController extends Controller
 {
     public function index()
     {
+        DB::enableQueryLog();
+
         $orderdits = orderDetail::with([
             'videogame:id,nombre'
         ])->get();
@@ -28,11 +32,28 @@ class OrderDetailsController extends Controller
             ];
         });
 
+            $queries = DB::getQueryLog();
+            $sqlQuery = end($queries)['query'];
+
+            // Crear un registro en RequestLog
+            RequestLog::create([
+                'user_id' => null, // No hay usuario relacionado
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => $sqlQuery, // Query SQL ejecutado
+                'data' => null,
+                'request_time' => now()->toDateTimeString()
+            ]);
+
         return response()->json($orderdit,200);
     }
 
     public function show($id)
     {
+        DB::enableQueryLog();
+
         $orderdits=orderDetail::with([
             'videogame:id,nombre'
         ])->where('order_id',$id)
@@ -53,6 +74,20 @@ class OrderDetailsController extends Controller
 
         if($orderdit)
         {
+            $queries = DB::getQueryLog();
+            $sqlQuery = end($queries)['query'];
+
+            // Crear un registro en RequestLog
+            RequestLog::create([
+                'user_id' => null, // No hay usuario relacionado
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => $sqlQuery, // Query SQL ejecutado
+                'data' => json_encode($orderdit),
+                'request_time' => now()->toDateTimeString()
+            ]);
             return response()->json(['message:'=>'Orde encontrada',$orderdit],200);
         }
         return response()->json(['message:'=>'Orde no encontrada'],400);
@@ -60,22 +95,40 @@ class OrderDetailsController extends Controller
 
     public function store(Request $request)
     {
-$validator=Validator::make($request->all(),[
-    'order_id'=>'required|numeric',
-    'videogame_id'=>'required|numeric',
-    'quantity'=>'required|numeric',
-    'totalPrice'=>'required|numeric',
-]);
-if($validator->fails())
-        {
-            return response()->json($validator->errors(),400);
-        }
-        $orderdei=orderDetail::create([
-        'order_id'=>$request->order_id,
-        'videogame_id'=>$request->videogame_id,
-        'quantity'=>$request->quantity,
-        'totalPrice'=>$request->totalPrice,
-    ]);
-    return response()->json($orderdei,201);
+        $validator=Validator::make($request->all(),[
+            'order_id'=>'required|numeric',
+            'videogame_id'=>'required|numeric',
+            'quantity'=>'required|numeric',
+            'totalPrice'=>'required|numeric',
+        ]);
+        if($validator->fails())
+            {
+                return response()->json($validator->errors(),400);
+            }
+
+            DB::enableQueryLog();
+
+            $orderdei=orderDetail::create([
+                'order_id'=>$request->order_id,
+                'videogame_id'=>$request->videogame_id,
+                'quantity'=>$request->quantity,
+                'totalPrice'=>$request->totalPrice,
+            ]);
+
+            $queries = DB::getQueryLog();
+            $querie = end($queries)['query'];
+
+            RequestLog::create([
+                'user_id' => null,
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => json_encode($querie), 
+                'data' => json_encode($orderdei),
+                'request_time'=> now()->toDateTimeString()
+            ]);
+
+        return response()->json($orderdei,201);
     }
 }

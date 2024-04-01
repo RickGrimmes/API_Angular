@@ -330,7 +330,7 @@ class UsersController extends Controller
             RequestLog::create([
                 'user_id' => $id, 
                 'user_name' => $user->name ?? null, 
-                'user_email' => $user->email ?? null, 
+                'user_email' => $user->email, 
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
                 'query' => $sqlQuery,

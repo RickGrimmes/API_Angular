@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\RequestLog;
 use App\Models\Valoration;
 use App\Models\videogamePlatform;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class VideogamePlatformController extends Controller
@@ -13,6 +15,8 @@ class VideogamePlatformController extends Controller
     {
         try
         {
+            DB::enableQueryLog();
+
             $videogameplats = videogamePlatform::with([
                 'platform:id,plataforma',
                 'videogame:id,nombre'
@@ -28,6 +32,21 @@ class VideogamePlatformController extends Controller
                     'created_at' => $videogameplat->created_at
                 ];
             });
+
+            $queries = DB::getQueryLog();
+            $sqlQuery = end($queries)['query'];
+
+            // Crear un registro en RequestLog
+            RequestLog::create([
+                'user_id' => null, // No hay usuario relacionado
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => $sqlQuery, // Query SQL ejecutado
+                'data' => null,
+                'request_time' => now()->toDateTimeString()
+            ]);
 
             return response()->json([
                 'status' => 'success',
@@ -46,25 +65,42 @@ class VideogamePlatformController extends Controller
 
     public function indexV($id)
     {
-        $videogameplats = videogamePlatform::with([
-            'platform:id,plataforma',
-            'videogame:id,nombre'
-        ])->where('videogame_id', $id)
-        ->get();
-
-        $videogameplat = $videogameplats->map(function ($videogameplat) 
-        {
-            return [
-            'id' => $videogameplat->id,
-            'platform_name' => $videogameplat->platform->plataforma,
-            'videogame_name' => $videogameplat->videogame->nombre,
-            'updated_at' => $videogameplat->updated_at,
-            'created_at' => $videogameplat->created_at
-            ];
-        });
-
         try
         {
+            DB::enableQueryLog();
+            
+            $videogameplats = videogamePlatform::with([
+                'platform:id,plataforma',
+                'videogame:id,nombre'
+            ])->where('videogame_id', $id)
+            ->get();
+
+            $videogameplat = $videogameplats->map(function ($videogameplat) 
+            {
+                return [
+                'id' => $videogameplat->id,
+                'platform_name' => $videogameplat->platform->plataforma,
+                'videogame_name' => $videogameplat->videogame->nombre,
+                'updated_at' => $videogameplat->updated_at,
+                'created_at' => $videogameplat->created_at
+                ];
+            });
+
+            $queries = DB::getQueryLog();
+            $sqlQuery = end($queries)['query'];
+
+            // Crear un registro en RequestLog
+            RequestLog::create([
+                'user_id' => null, // No hay usuario relacionado
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => $sqlQuery, // Query SQL ejecutado
+                'data' => null,
+                'request_time' => now()->toDateTimeString()
+            ]);
+
             return response()->json([
                 'status' => 'success',
                 'data' => $videogameplat
@@ -82,25 +118,42 @@ class VideogamePlatformController extends Controller
 
     public function indexP($id)
     {
-        $videogameplats = videogamePlatform::with([
-            'platform:id,plataforma',
-            'videogame:id,nombre'
-        ])->where('platform_id', $id)
-        ->get();
-
-        $videogameplat = $videogameplats->map(function ($videogameplat) 
-        {
-            return [
-            'id' => $videogameplat->id,
-            'platform_name' => $videogameplat->platform->plataforma,
-            'videogame_name' => $videogameplat->videogame->nombre,
-            'updated_at' => $videogameplat->updated_at,
-            'created_at' => $videogameplat->created_at
-            ];
-        });
-
         try
         {
+            DB::enableQueryLog();
+            
+            $videogameplats = videogamePlatform::with([
+                'platform:id,plataforma',
+                'videogame:id,nombre'
+            ])->where('platform_id', $id)
+            ->get();
+
+            $videogameplat = $videogameplats->map(function ($videogameplat) 
+            {
+                return [
+                'id' => $videogameplat->id,
+                'platform_name' => $videogameplat->platform->plataforma,
+                'videogame_name' => $videogameplat->videogame->nombre,
+                'updated_at' => $videogameplat->updated_at,
+                'created_at' => $videogameplat->created_at
+                ];
+            });
+
+            $queries = DB::getQueryLog();
+            $sqlQuery = end($queries)['query'];
+
+            // Crear un registro en RequestLog
+            RequestLog::create([
+                'user_id' => null, // No hay usuario relacionado
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => $sqlQuery, // Query SQL ejecutado
+                'data' => null,
+                'request_time' => now()->toDateTimeString()
+            ]);
+            
             return response()->json([
                 'status' => 'success',
                 'data' => $videogameplat
@@ -133,7 +186,23 @@ class VideogamePlatformController extends Controller
         }
         try
         {
+            DB::enableQueryLog();
+
             $videogameplat = videogamePlatform::create($request->all());
+
+            $queries = DB::getQueryLog();
+            $querie = end($queries)['query'];
+
+            RequestLog::create([
+                'user_id' => null,
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => json_encode($querie), 
+                'data' => json_encode($videogameplat),
+                'request_time'=> now()->toDateTimeString()
+            ]);
 
             return response()->json([
                 'status' => 'success',

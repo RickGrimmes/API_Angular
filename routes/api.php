@@ -59,10 +59,10 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
 
     //--------------------------------------------------------------------------------------------------------------------------
     // index solo es llamar a todos los juegos
-    Route::get('/videogames', [VideogamesController::class, 'index']);
+    Route::get('/videogames', [VideogamesController::class, 'index']); // 1
     // findOne busca según el id, osea solo muestra 1 juego, aquí puedo meterle mas cositas de otras tablas
     // quizá a quí meta lo de valoraciones o vp y vplat
-    Route::get('/videogames/{id}', [VideogamesController::class, 'findOne']);
+    Route::get('/videogames/{id}', [VideogamesController::class, 'findOne']); // 1
     // crear nuevo juego, pide todo lo que se necesita para crearlo
     Route::post('/videogames', [VideogamesController::class, 'store']);
     // actualizar el juego, en la ruta se ocupa una id para que sepa cuál juego es, y ya según lo que le quieras mover

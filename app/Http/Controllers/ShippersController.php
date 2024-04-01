@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\RequestLog;
 use App\Models\Shipper;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ShippersController extends Controller
@@ -12,12 +14,32 @@ class ShippersController extends Controller
     {
         try
         {
+            DB::enableQueryLog();
+
             $shipper = Shipper::all();
+
+            // Obtener el query SQL ejecutado
+            $queries = DB::getQueryLog();
+            $sqlQuery = end($queries)['query'];
+
+            // Crear un registro en RequestLog
+            RequestLog::create([
+                'user_id' => null, // No hay usuario relacionado
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => $sqlQuery, // Query SQL ejecutado
+                'data' => null,
+                'request_time' => now()->toDateTimeString()
+            ]);
+
             return response()->json([
                 'status' => 'success',
                 'data' => $shipper
             ], 200);
         }
+
         catch (\Exception $e)
         {
             return response()->json([
@@ -47,7 +69,23 @@ class ShippersController extends Controller
 
         try
         {
+            DB::enableQueryLog();
+
             $shipper = Shipper::create($request->all());
+
+            $queries = DB::getQueryLog();
+            $querie = end($queries)['query'];
+
+            RequestLog::create([
+                'user_id' => null,
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => json_encode($querie), 
+                'data' => json_encode($shipper),
+                'request_time'=> now()->toDateTimeString()
+            ]);
 
             return response()->json([
                 'status' => 'success',
@@ -108,7 +146,23 @@ class ShippersController extends Controller
 
         try
         {
+            DB::enableQueryLog();
+
             $shipper->delete();
+
+            $queries = DB::getQueryLog();
+            $querie = end($queries)['query'];
+
+            RequestLog::create([
+                'user_id' => null,
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => json_encode($querie), 
+                'data' => json_encode($shipper),
+                'request_time'=> now()->toDateTimeString()
+            ]);
             return response()->json([
                 'status' => 'success',
                 'message' => 'Shipper eliminado'

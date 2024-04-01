@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Provider;
+use App\Models\RequestLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class ProvidersController extends Controller
@@ -12,7 +14,24 @@ class ProvidersController extends Controller
     {
         try
         {
+            DB::enableQueryLog();
+
             $provider = Provider::all();
+
+            $queries = DB::getQueryLog();
+            $sqlQuery = end($queries)['query'];
+
+            // Crear un registro en RequestLog
+            RequestLog::create([
+                'user_id' => null, // No hay usuario relacionado
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => $sqlQuery, // Query SQL ejecutado
+                'data' => null,
+                'request_time' => now()->toDateTimeString()
+            ]);
 
             return response()->json([
                 'status' => 'success',
@@ -48,7 +67,23 @@ class ProvidersController extends Controller
 
         try
         {
+            DB::enableQueryLog();
+
             $provider = Provider::create($request->all());
+
+            $queries = DB::getQueryLog();
+            $querie = end($queries)['query'];
+
+            RequestLog::create([
+                'user_id' => null,
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => json_encode($querie), 
+                'data' => json_encode($provider),
+                'request_time'=> now()->toDateTimeString()
+            ]);
 
             return response()->json([
                 'status' => 'success',
@@ -109,7 +144,24 @@ class ProvidersController extends Controller
 
         try
         {
+            DB::enableQueryLog();
+
             $provider->delete();
+            
+            $queries = DB::getQueryLog();
+            $querie = end($queries)['query'];
+
+            RequestLog::create([
+                'user_id' => null,
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => json_encode($querie), 
+                'data' => json_encode($provider),
+                'request_time'=> now()->toDateTimeString()
+            ]);
+
             return response()->json([
                 'status' => 'success',
                 'message' => 'Provider eliminado'

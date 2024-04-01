@@ -1,16 +1,20 @@
 <?php
 
 namespace App\Http\Controllers;
-
+ 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\RequestLog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
     public function index()
     {
+        DB::enableQueryLog();
+
         $orders = Order::with([
             'user:id,name',
             'shipper:id,name',
@@ -29,6 +33,22 @@ class OrderController extends Controller
         });
 
         if($order){
+            
+            $queries = DB::getQueryLog();
+            $sqlQuery = end($queries)['query'];
+
+            // Crear un registro en RequestLog
+            RequestLog::create([
+                'user_id' => null, // No hay usuario relacionado
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => $sqlQuery, // Query SQL ejecutado
+                'data' => null,
+                'request_time' => now()->toDateTimeString()
+            ]);
+
             return response()->json([
                 'message' => 'Order ecncontradas: ',
                 $order
@@ -43,15 +63,31 @@ class OrderController extends Controller
 
     public function show($id)
     {
-    $order=Order::where('user_id', $id)->get();
-    if($order){
-        return response()->json(['message' => 'Ordenes encontradas: ', $order], 200);
-    }
+        DB::enableQueryLog();
 
-    return response()->json(['message'=>'Ordenes no encontradas para el usuario con id: '.$id], 404);
+        $order=Order::where('user_id', $id)->get();
+
+        $queries = DB::getQueryLog();
+        if($order){
+            RequestLog::create([
+                'user_id' =>null,
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => json_encode($queries), 
+                'data' => json_encode($order),
+                'request_time'=> now()->toDateTimeString()
+            ]);
+            return response()->json(['message' => 'Ordenes encontradas: ', $order], 200);
+        }
+
+        return response()->json(['message'=>'Ordenes no encontradas para el usuario con id: '.$id], 404);
     }
     public function store(Request $request)
     {
+        DB::enableQueryLog();
+
         $validator=Validator::make($request->all(),[
             'user_id'=>'required|numeric',
             'shipper_id'=>'required|numeric',
@@ -67,8 +103,24 @@ class OrderController extends Controller
             'shipper_id'=>$request->shipper_id,
             'state_id'=>$request->state_id
         ]);
+        
+        $queries = DB::getQueryLog();
+        $querie = end($queries)['query'];
+
+        RequestLog::create([
+            'user_id' => null,
+            'user_name' => null,
+            'user_email' => null,
+            'http_verb' => request()->method(),
+            'route' => request()->path(),
+            'query' => json_encode($querie), 
+            'data' => json_encode($order),
+            'request_time'=> now()->toDateTimeString()
+        ]);
+        
         return response()->json($order,201);
     }
+    
     public function update(Request $request, $id)
     {
         $order=Order::find($id);
