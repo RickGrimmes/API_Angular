@@ -102,7 +102,7 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
     Route::get('/videogameProviders/v/{id}', [VideogameProviderController::class, 'indexV']);
     Route::get('/videogameProviders/p/{id}', [VideogameProviderController::class, 'indexP']);
     Route::post('/videogameProviders', [VideogameProviderController::class, 'store']);
-    Route::put('/videogameProviders/{videogame_id}/{provider_id}', [VideogameProviderController::class, 'update']);
+    Route::put('/videogameProviders/{provider_id}/{videogame_id}', [VideogameProviderController::class, 'update']);
 
     //--------------------------------------------------------------------------------------------------------------------------
     Route::get('/genres', [GenreController::class, 'index']);

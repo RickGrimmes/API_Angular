@@ -280,12 +280,12 @@ class UsersController extends Controller
             return response()->json($validator->errors(), 400);
         }
     
-        $user->fill($request->all())->save();
-
         DB::enableQueryLog();
-        $user = User::find($id);
+        $user->update(['password' => $request->password]);
 
         $queries = DB::getQueryLog();
+        $user = User::find($id);
+
         $sqlQuery = end($queries)['query'];
 
         RequestLog::create([

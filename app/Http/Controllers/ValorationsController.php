@@ -135,8 +135,23 @@ class ValorationsController extends Controller
 
         try
         {
+            DB::enableQueryLog();
+
             $valoration->update(['estrellas' => $request->estrellas]);
 
+            $queries = DB::getQueryLog();
+            $querie = end($queries)['query'];
+
+            RequestLog::create([
+                'user_id' => null,
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => json_encode($querie), 
+                'data' => json_encode($valoration),
+                'request_time'=> now()->toDateTimeString()
+            ]);
             return response()->json([
                 'status' => 'success',
                 'data' => $valoration

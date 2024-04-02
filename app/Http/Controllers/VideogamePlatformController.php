@@ -121,7 +121,7 @@ class VideogamePlatformController extends Controller
         try
         {
             DB::enableQueryLog();
-            
+
             $videogameplats = videogamePlatform::with([
                 'platform:id,plataforma',
                 'videogame:id,nombre'
@@ -240,7 +240,23 @@ class VideogamePlatformController extends Controller
 
         try
         {
+            DB::enableQueryLog();
+            
             $videogameplat->update(['platform_id' => $request->platform_id]);
+
+            $queries = DB::getQueryLog();
+            $querie = end($queries)['query'];
+
+            RequestLog::create([
+                'user_id' => null,
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => json_encode($querie), 
+                'data' => json_encode($videogameplat),
+                'request_time'=> now()->toDateTimeString()
+            ]);
 
             return response()->json([
                 'status' => 'success',

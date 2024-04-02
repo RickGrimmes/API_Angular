@@ -239,8 +239,24 @@ class VideogameProviderController extends Controller
 
         try
         {
+            DB::enableQueryLog();
+
             $videogameprov->update(['provider_id' => $request->provider_id]);
 
+            $queries = DB::getQueryLog();
+            $querie = end($queries)['query'];
+
+            RequestLog::create([
+                'user_id' => null,
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => json_encode($querie), 
+                'data' => json_encode($videogameprov),
+                'request_time'=> now()->toDateTimeString()
+            ]);
+            
             return response()->json([
                 'status' => 'success',
                 'data' => $videogameprov

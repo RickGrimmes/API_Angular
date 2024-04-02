@@ -120,7 +120,7 @@ class OrderController extends Controller
         
         return response()->json($order,201);
     }
-    
+
     public function update(Request $request, $id)
     {
         $order=Order::find($id);
@@ -133,10 +133,26 @@ class OrderController extends Controller
         {
             return response()->json($validator->errors(),400);
         }    
-        $order->update($request->all());
+        DB::enableQueryLog();
+
+        $order->update(['state_id' => $request->state_id]);
+
+        $queries = DB::getQueryLog();
+        $querie = end($queries)['query'];
+
+            RequestLog::create([
+                'user_id' => null,
+                'user_name' => null,
+                'user_email' => null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => json_encode($querie), 
+                'data' => json_encode($order),
+                'request_time'=> now()->toDateTimeString()
+            ]);
         return response()->json($order,200);
-    }
-    return response()->json(['message'=>'Order no encontrada'], 404);
         }
+        return response()->json(['message'=>'Order no encontrada'], 404);
+    }
 }
 
