@@ -77,11 +77,14 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
     Route::delete('/shippers/{id}', [ShippersController::class, 'destroy']);
 
     //--------------------------------------------------------------------------------------------------------------------------
-    Route::get('/providers', [ProvidersController::class, 'index']);
-    Route::post('/providers', [ProvidersController::class, 'store']);
-    Route::put('/providers/{id}', [ProvidersController::class, 'update']);
-    Route::delete('/providers/{id}', [ProvidersController::class, 'destroy']);
 
+    Route::middleware('jwt.verify')->group(function(){
+        Route::get('/providers', [ProvidersController::class, 'index']);
+        Route::post('/providers', [ProvidersController::class, 'store']);
+        Route::put('/providers/{id}', [ProvidersController::class, 'update']);
+        Route::delete('/providers/{id}', [ProvidersController::class, 'destroy']);
+    });
+    
     //--------------------------------------------------------------------------------------------------------------------------
     Route::get('/valorations', [ValorationsController::class, 'index']);
     Route::post('/valorations', [ValorationsController::class, 'store']);
