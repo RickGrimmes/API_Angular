@@ -10,10 +10,13 @@ use Illuminate\Support\Facades\Validator;
 
 class ProvidersController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try
         {
+            // Verificar si el usuario está autenticado y obtener su información
+            $authenticatedUser = $request->user();
+
             DB::enableQueryLog();
 
             $provider = Provider::all();
@@ -21,14 +24,14 @@ class ProvidersController extends Controller
             $queries = DB::getQueryLog();
             $sqlQuery = end($queries)['query'];
 
-            // Crear un registro en RequestLog
             RequestLog::create([
-                'user_id' => null, // No hay usuario relacionado
-                'user_name' => null,
-                'user_email' => null,
+                // AQUI YA NOMAS SACO ESOS DATOS DE AUTHENTICATEDUSER
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
-                'query' => $sqlQuery, // Query SQL ejecutado
+                'query' => $sqlQuery,
                 'data' => null,
                 'request_time' => now()->toDateTimeString()
             ]);
@@ -50,6 +53,8 @@ class ProvidersController extends Controller
 
     public function store(Request $request)
     {
+        $authenticatedUser = $request->user();
+
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|min:5|max:100',
             'direccion' => 'required|string', 
@@ -75,9 +80,9 @@ class ProvidersController extends Controller
             $querie = end($queries)['query'];
 
             RequestLog::create([
-                'user_id' => null,
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null,
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
                 'query' => json_encode($querie), 
@@ -102,6 +107,8 @@ class ProvidersController extends Controller
 
     public function update(Request $request, $id)
     {
+        $authenticatedUser = $request->user();
+
         $provider = Provider::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
@@ -129,9 +136,9 @@ class ProvidersController extends Controller
             $querie = end($queries)['query'];
 
             RequestLog::create([
-                'user_id' => null,
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null,
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
                 'query' => json_encode($querie), 
@@ -154,8 +161,9 @@ class ProvidersController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
+        $authenticatedUser = $request->user();
         $provider = Provider::findOrFail($id);
 
         try
@@ -168,9 +176,9 @@ class ProvidersController extends Controller
             $querie = end($queries)['query'];
 
             RequestLog::create([
-                'user_id' => null,
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null,
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
                 'query' => json_encode($querie), 

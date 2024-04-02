@@ -91,7 +91,6 @@ class UsersController extends Controller
     public function login(Request $request)
     {
         $credenciales = $request->only('email', 'password');
-    
         
         try
         {
@@ -113,22 +112,24 @@ class UsersController extends Controller
 
         $user = JWTAuth::user();
 
-        RequestLog::create([
-            'user_id' => $user->id,
-            'user_name' => $user->name,
-            'user_email' => $user->email,
-            'http_verb' => $request->method(),
-            'route' => $request->path(),
-            'query' => null,
-            'data' => 'SUCCESS',
-            'request_time' => now()->toDateTimeString()
-        ]);
         $user = User::where('email', $request->email)->first();
         $isActiver = $user->isActive;
         if($isActiver==1)
         {
             $token = JWTAuth::fromUser($user);
-        return response()->json([
+
+            RequestLog::create([
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_email' => $user->email,
+                'http_verb' => $request->method(),
+                'route' => $request->path(),
+                'query' => null,
+                'data' => 'SUCCESS',
+                'request_time' => now()->toDateTimeString()
+            ]);
+            
+            return response()->json([
             'status' => 'success',
             'user'=>$user,
             'token' => $token]);
@@ -375,12 +376,7 @@ class UsersController extends Controller
             return response()->json([
                 'status' => 'success',
                 'token' => $token]);
-            
-
-        
         } else {
-        
-
             return response()->json('Código inválido');
         }
     }
