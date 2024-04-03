@@ -20,7 +20,14 @@ class UsersController extends Controller
 {
     public function index(Request $request)
     {
-       
+       $authenticatedUser = $request->user();
+
+       if ($authenticatedUser->role_id != 1) 
+       {
+           return response()->json([
+               'message' => 'No tiene permiso para ver este contenido'
+           ], 403);
+       }
 
         DB::enableQueryLog();
 
@@ -56,9 +63,9 @@ class UsersController extends Controller
 
         if($user){
             RequestLog::create([
-                'user_id' => null,
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null, 
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null, 
                 'http_verb' => $request->method(),
                 'route' => $request->path(),
                 'query' => json_encode($queries),
@@ -71,17 +78,7 @@ class UsersController extends Controller
                 'data' => $user
             ], 200);
         }
-        
-        RequestLog::create([
-            'user_id' => null,
-            'user_name' => null,
-            'user_email' => null,
-            'http_verb' => $request->method(),
-            'route' => $request->path(),
-            'query' => json_encode($queries),
-            'data' => null,
-            'request_time'=> now()->toDateTimeString()
-        ]);
+
         return response()->json(['message'=>'usuario no encontrado'], 404);
     }
 
@@ -176,10 +173,8 @@ class UsersController extends Controller
 
     public function show($id)
     {
-        // sacarr el usuario autenticado
         $authenticatedUser = Auth::user();
 
-        // checa si el usuario autenticado tiene permiso para acceder al usuario por id
         if ($authenticatedUser->id != $id) 
         {
             return response()->json([
