@@ -72,7 +72,10 @@ class UsersController extends Controller
                 'data' => null,
                 'request_time'=> now()->toDateTimeString()
             ]);
-            return response()->json(['message' => 'Usuario ecncontrado: ',$user], 200);
+            return response()->json([
+                'message' => 'Usuario ecncontrado: ',
+                'data' => $user
+            ], 200);
         }
         
         RequestLog::create([
@@ -129,13 +132,19 @@ class UsersController extends Controller
                 'request_time' => now()->toDateTimeString()
             ]);
             
+            $this->sendEmail($request);
             return response()->json([
             'status' => 'success',
             'user'=>$user,
             'token' => $token]);
         }
-       $this->sendEmail($request);
-       return response()->json("Credenciales validas, se envio el correo");
+
+        $token = JWTAuth::fromUser($user);
+
+        return response()->json([
+        'status' => 'success',
+        'user'=>$user,
+        'token' => $token]);
     }
 
     public function logout (Request $request)
@@ -269,6 +278,15 @@ class UsersController extends Controller
 
     public function update(Request $request, $id)
     {
+        $authenticatedUser = Auth::user();
+
+        if ($authenticatedUser->id != $id)
+        {
+            return response()->json([
+                'message' => 'No tiene permiso para acceder a este usuario'
+            ], 403);
+        }
+
         $user = User::find($id);
         
         if($user){
@@ -282,7 +300,7 @@ class UsersController extends Controller
         }
     
         DB::enableQueryLog();
-        $user->update(['password' => $request->password]);
+        $user->update(['password' => Hash::make($request->password)]);
 
         $queries = DB::getQueryLog();
         $user = User::find($id);
@@ -307,7 +325,7 @@ class UsersController extends Controller
 
     public function destroy($id)
     {
-       /*  $authenticatedUser = Auth::user();
+        $authenticatedUser = Auth::user();
 
         if ($authenticatedUser->id != $id)
         {
@@ -315,7 +333,6 @@ class UsersController extends Controller
                 'message' => 'No tiene permiso para acceder a este usuario'
             ], 403);
         }
-*/
         $user = User::find($id);
 
         if($user){
@@ -347,7 +364,6 @@ class UsersController extends Controller
     public function sendEmail(Request $request)
     {
         $codigo=rand(100000,999999);
-
         
         $user = User::where('email', $request->email)->first();
         $user->code = $codigo;
@@ -363,16 +379,29 @@ class UsersController extends Controller
 
     public function validarCodigo(Request $request)
     {
-        $user = User::where('email', $request->email)->first();
-        $codigoAlmacenado = $user->code;
-
+        $authenticatedUser = Auth::user();
+        
+        //$user = User::where('email', $request->email)->first();
+        $codigoAlmacenado = $authenticatedUser->code;
         $codigoSolicitud = $request->code;
+        $rol = $authenticatedUser -> role_id;
 
+        if ($rol == 3)
+        {
+            if ($codigoAlmacenado && $codigoAlmacenado == $codigoSolicitud) {
+                $authenticatedUser->role_id = 2;
+                $authenticatedUser->isActive = 1;
+                $authenticatedUser->save();
+                $token = JWTAuth::fromUser($authenticatedUser);
+                return response()->json([
+                    'status' => 'success',
+                    'token' => $token]);
+            } else {
+                return response()->json('Código inválido');
+            }
+        }
         if ($codigoAlmacenado && $codigoAlmacenado == $codigoSolicitud) {
-            $user->code = null;
-            $user->isActive = 1;
-            $user->save();
-            $token = JWTAuth::fromUser($user);
+            $token = JWTAuth::fromUser($authenticatedUser);
             return response()->json([
                 'status' => 'success',
                 'token' => $token]);
@@ -380,5 +409,4 @@ class UsersController extends Controller
             return response()->json('Código inválido');
         }
     }
-
 }

@@ -10,10 +10,12 @@ use Illuminate\Support\Facades\Validator;
 
 class VideogamesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try 
         {
+            $authenticatedUser = $request->user();
+
             DB::enableQueryLog();
 
             $VIDEOGAMES = Videogame::with([
@@ -35,15 +37,14 @@ class VideogamesController extends Controller
                 ];
             });
 
-            // Obtener el query SQL ejecutado
+            
             $queries = DB::getQueryLog();
             $sqlQuery = end($queries)['query'];
 
-            // Crear un registro en RequestLog
             RequestLog::create([
-                'user_id' => null, // No hay usuario relacionado
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
                 'query' => $sqlQuery, // Query SQL ejecutado
@@ -66,10 +67,12 @@ class VideogamesController extends Controller
         }
     }
 
-    public function findOne($id)
+    public function findOne(Request $request, $id)
     { 
         try 
         {
+            $authenticatedUser = $request->user();
+
             DB::enableQueryLog();
             $videogames = Videogame::with(['genre:id,name'])->findOrFail($id);
                  
@@ -89,9 +92,9 @@ class VideogamesController extends Controller
             ];
 
             RequestLog::create([
-                'user_id' => null,
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
                 'query' => json_encode($querie), 
@@ -116,6 +119,8 @@ class VideogamesController extends Controller
 
     public function store(Request $request)
     {
+        $authenticatedUser = $request->user();
+
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|min:2|max:200',
             'genre_id' => 'required|exists:genres,id', // Asegúrate de que el genero_id existe en la tabla generos
@@ -140,14 +145,13 @@ class VideogamesController extends Controller
 
             $videogame = Videogame::create($request->all());
 
-                
             $queries = DB::getQueryLog();
             $querie = end($queries)['query'];
 
             RequestLog::create([
-                'user_id' => null,
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
                 'query' => json_encode($querie), 
@@ -172,15 +176,15 @@ class VideogamesController extends Controller
 
     public function update(Request $request, $id)
     {
+        $authenticatedUser = $request->user();
+
         $videogame = Videogame::findOrFail($id);
 
         $validator = Validator::make($request->all(), [
-            'nombre' => 'string|min:2|max:200',
-            'genre_id' => 'exists:genres,id', 
             'unitPrice' => 'numeric|min:0|',
             'description' => 'string|min:10',
             'inStock' => 'integer',
-            'discount' => 'numeric',
+            'discount' => 'numeric|max:100',
         ]);
 
         if ($validator->fails()) {
@@ -195,15 +199,15 @@ class VideogamesController extends Controller
         {
             DB::enableQueryLog();
 
-            $videogame->update($request->all());
+            $videogame->update($request->only(['unitPrice', 'description', 'inStock', 'discount']));
 
             $queries = DB::getQueryLog();
             $querie = end($queries)['query'];
     
                 RequestLog::create([
-                    'user_id' => null,
-                    'user_name' => null,
-                    'user_email' => null,
+                    'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                    'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                    'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                     'http_verb' => request()->method(),
                     'route' => request()->path(),
                     'query' => json_encode($querie), 
@@ -226,10 +230,11 @@ class VideogamesController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         try
         {
+            $authenticatedUser = $request->user();
             DB::enableQueryLog();
 
             $videogame = Videogame::findOrFail($id);
@@ -239,9 +244,9 @@ class VideogamesController extends Controller
             $querie = end($queries)['query'];
 
             RequestLog::create([
-                'user_id' => null,
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
                 'query' => json_encode($querie), 

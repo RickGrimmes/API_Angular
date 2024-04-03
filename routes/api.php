@@ -35,27 +35,24 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::get('Logs', [LogsController::class, 'index']);
 
 Route::post('sendEmail', [UsersController::class, 'sendEmail']);
-Route::post('validarCodigo', [UsersController::class, 'validarCodigo']);
 
 Route::post('User', [UsersController::class, 'store']); // 1
 Route::post('User/login', [UsersController::class, 'login']); // 1
 
 // protected routes
-
-// Route::middleware('jwt.verify')->group(function(){
+ Route::middleware('jwt.verify')->group(function(){
     Route::get('User', [UsersController::class, 'index']); // 1
     Route::get('User/{id}', [UsersController::class, 'show']); // 1
     Route::delete('User/{id}', [UsersController::class, 'destroy']); // 1
     Route::put('User/{id}', [UsersController::class, 'update']);
-
     Route::post('User/logout', [UsersController::class, 'logout']); // 1
+
+    Route::post('validarCodigo', [UsersController::class, 'validarCodigo']);
 
     Route::resource('Order',OrderController::class);
     Route::resource('OrderDit',OrderDetailsController::class);
     
     Route::get('OrderDit/{id}', [OrderDetailsController::class, 'show']);
-
-    
 
     //--------------------------------------------------------------------------------------------------------------------------
     // index solo es llamar a todos los juegos
@@ -78,13 +75,13 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
 
     //--------------------------------------------------------------------------------------------------------------------------
 
-    Route::middleware('jwt.verify')->group(function(){
+//    Route::middleware('jwt.verify')->group(function(){
         Route::get('/providers', [ProvidersController::class, 'index']);
         Route::post('/providers', [ProvidersController::class, 'store']);
         Route::put('/providers/{id}', [ProvidersController::class, 'update']);
         Route::delete('/providers/{id}', [ProvidersController::class, 'destroy']);
-    });
-    
+//    });
+
     //--------------------------------------------------------------------------------------------------------------------------
     Route::get('/valorations', [ValorationsController::class, 'index']);
     Route::post('/valorations', [ValorationsController::class, 'store']);
@@ -109,6 +106,8 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
 
     //--------------------------------------------------------------------------------------------------------------------------
     Route::get('/genres', [GenreController::class, 'index']);
-
-// });
+    Route::post('/genres', [GenreController::class, 'sse']);
+ });
 // invitado nomas puede ver cosas pero nada mas, cliente puede ver, pero solo agregar y modificar
+
+    

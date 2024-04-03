@@ -10,10 +10,11 @@ use Illuminate\Support\Facades\Validator;
 
 class ValorationsController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try
         {
+            $authenticatedUser = $request->user();
             DB::enableQueryLog();
 
             $valorations = Valoration::with([
@@ -32,15 +33,13 @@ class ValorationsController extends Controller
                 ];
             });
 
-            // Obtener el query SQL ejecutado
             $queries = DB::getQueryLog();
             $sqlQuery = end($queries)['query'];
 
-            // Crear un registro en RequestLog
             RequestLog::create([
-                'user_id' => null, // No hay usuario relacionado
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
                 'query' => $sqlQuery, // Query SQL ejecutado
@@ -64,6 +63,8 @@ class ValorationsController extends Controller
 
     public function store(Request $request)
     {
+        $authenticatedUser = $request->user();
+
         $validator = Validator::make($request->all(), [
             'user_id' => 'required|exists:users,id',
             'videogame_id' => 'required|exists:videogames,id', 
@@ -89,9 +90,9 @@ class ValorationsController extends Controller
             $querie = end($queries)['query'];
 
             RequestLog::create([
-                'user_id' => null,
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
                 'query' => json_encode($querie), 
@@ -116,6 +117,8 @@ class ValorationsController extends Controller
 
     public function update(Request $request, $user_id, $videogame_id)
     {
+        $authenticatedUser = $request->user();
+
         $valoration = Valoration::where('user_id', $user_id)
         ->where('videogame_id', $videogame_id)
         ->firstOrFail();
@@ -143,9 +146,9 @@ class ValorationsController extends Controller
             $querie = end($queries)['query'];
 
             RequestLog::create([
-                'user_id' => null,
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
                 'query' => json_encode($querie), 
