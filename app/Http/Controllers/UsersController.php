@@ -20,13 +20,7 @@ class UsersController extends Controller
 {
     public function index(Request $request)
     {
-        $authenticatedUser = Auth::user();
-
-        if ($authenticatedUser->role_id != 1) {
-            return response()->json([
-                'message' => 'No tiene permiso para acceder a esta funcionalidad'
-            ], 403);
-        }
+       
 
         DB::enableQueryLog();
 
@@ -62,9 +56,9 @@ class UsersController extends Controller
 
         if($user){
             RequestLog::create([
-                'user_id' => $authenticatedUser->id,
-                'user_name' => $authenticatedUser->name,
-                'user_email' => $authenticatedUser->email,
+                'user_id' => null,
+                'user_name' => null,
+                'user_email' => null,
                 'http_verb' => $request->method(),
                 'route' => $request->path(),
                 'query' => json_encode($queries),
@@ -72,13 +66,13 @@ class UsersController extends Controller
                 'data' => null,
                 'request_time'=> now()->toDateTimeString()
             ]);
-            return response()->json(['message' => 'Usuario ecncontrado: ',$user], 200);
+            return response()->json(['message' => 'Usuario ecncontrado: ','data'=>$user], 200);
         }
         
         RequestLog::create([
-            'user_id' => $authenticatedUser->id,
-            'user_name' => $authenticatedUser->name,
-            'user_email' => $authenticatedUser->email,
+            'user_id' => null,
+            'user_name' => null,
+            'user_email' => null,
             'http_verb' => $request->method(),
             'route' => $request->path(),
             'query' => json_encode($queries),
