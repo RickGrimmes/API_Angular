@@ -11,8 +11,9 @@ use Illuminate\Support\Facades\Validator;
 
 class OrderController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $authenticatedUser = $request->user();
         DB::enableQueryLog();
 
         $orders = Order::with([
@@ -37,14 +38,13 @@ class OrderController extends Controller
             $queries = DB::getQueryLog();
             $sqlQuery = end($queries)['query'];
 
-            // Crear un registro en RequestLog
             RequestLog::create([
-                'user_id' => null, // No hay usuario relacionado
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
-                'query' => $sqlQuery, // Query SQL ejecutado
+                'query' => $sqlQuery,
                 'data' => null,
                 'request_time' => now()->toDateTimeString()
             ]);
@@ -61,8 +61,9 @@ class OrderController extends Controller
         }
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
+        $authenticatedUser = $request->user();
         DB::enableQueryLog();
 
         $order=Order::where('user_id', $id)->get();
@@ -70,9 +71,9 @@ class OrderController extends Controller
         $queries = DB::getQueryLog();
         if($order){
             RequestLog::create([
-                'user_id' =>null,
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
                 'query' => json_encode($queries), 
@@ -86,6 +87,8 @@ class OrderController extends Controller
     }
     public function store(Request $request)
     {
+        $authenticatedUser = $request->user();
+
         DB::enableQueryLog();
 
         $validator=Validator::make($request->all(),[
@@ -108,9 +111,9 @@ class OrderController extends Controller
         $querie = end($queries)['query'];
 
         RequestLog::create([
-            'user_id' => null,
-            'user_name' => null,
-            'user_email' => null,
+            'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+            'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+            'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
             'http_verb' => request()->method(),
             'route' => request()->path(),
             'query' => json_encode($querie), 
@@ -123,6 +126,7 @@ class OrderController extends Controller
 
     public function update(Request $request, $id)
     {
+        $authenticatedUser = $request->user();
         $order=Order::find($id);
         if($order)
         {
@@ -141,9 +145,9 @@ class OrderController extends Controller
         $querie = end($queries)['query'];
 
             RequestLog::create([
-                'user_id' => null,
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
                 'query' => json_encode($querie), 

@@ -11,10 +11,11 @@ use Illuminate\Support\Facades\Validator;
 
 class VideogamePlatformController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         try
         {
+            $authenticatedUser = $request->user();
             DB::enableQueryLog();
 
             $videogameplats = videogamePlatform::with([
@@ -36,14 +37,13 @@ class VideogamePlatformController extends Controller
             $queries = DB::getQueryLog();
             $sqlQuery = end($queries)['query'];
 
-            // Crear un registro en RequestLog
             RequestLog::create([
-                'user_id' => null, // No hay usuario relacionado
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
-                'query' => $sqlQuery, // Query SQL ejecutado
+                'query' => $sqlQuery,
                 'data' => null,
                 'request_time' => now()->toDateTimeString()
             ]);
@@ -63,10 +63,11 @@ class VideogamePlatformController extends Controller
         }
     }
 
-    public function indexV($id)
+    public function indexV(Request $request, $id)
     {
         try
         {
+            $authenticatedUser = $request->user();
             DB::enableQueryLog();
             
             $videogameplats = videogamePlatform::with([
@@ -89,14 +90,13 @@ class VideogamePlatformController extends Controller
             $queries = DB::getQueryLog();
             $sqlQuery = end($queries)['query'];
 
-            // Crear un registro en RequestLog
             RequestLog::create([
-                'user_id' => null, // No hay usuario relacionado
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
-                'query' => $sqlQuery, // Query SQL ejecutado
+                'query' => $sqlQuery, 
                 'data' => null,
                 'request_time' => now()->toDateTimeString()
             ]);
@@ -116,10 +116,11 @@ class VideogamePlatformController extends Controller
         }
     }
 
-    public function indexP($id)
+    public function indexP(Request $request, $id)
     {
         try
         {
+            $authenticatedUser = $request->user();
             DB::enableQueryLog();
 
             $videogameplats = videogamePlatform::with([
@@ -142,14 +143,13 @@ class VideogamePlatformController extends Controller
             $queries = DB::getQueryLog();
             $sqlQuery = end($queries)['query'];
 
-            // Crear un registro en RequestLog
             RequestLog::create([
-                'user_id' => null, // No hay usuario relacionado
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
-                'query' => $sqlQuery, // Query SQL ejecutado
+                'query' => $sqlQuery, 
                 'data' => null,
                 'request_time' => now()->toDateTimeString()
             ]);
@@ -171,6 +171,8 @@ class VideogamePlatformController extends Controller
 
     public function store(Request $request)
     {
+        $authenticatedUser = $request->user();
+
         $validator = Validator::make($request->all(), [
             'platform_id' => 'required|exists:platforms,id',
             'videogame_id' => 'required|exists:videogames,id'
@@ -194,9 +196,9 @@ class VideogamePlatformController extends Controller
             $querie = end($queries)['query'];
 
             RequestLog::create([
-                'user_id' => null,
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
                 'query' => json_encode($querie), 
@@ -221,6 +223,8 @@ class VideogamePlatformController extends Controller
 
     public function update(Request $request, $platform_id, $videogame_id)
     {
+        $authenticatedUser = $request->user();
+
         $videogameplat = videogamePlatform::where('platform_id', $platform_id)
         ->where('videogame_id', $videogame_id)
         ->firstOrFail();
@@ -248,9 +252,9 @@ class VideogamePlatformController extends Controller
             $querie = end($queries)['query'];
 
             RequestLog::create([
-                'user_id' => null,
-                'user_name' => null,
-                'user_email' => null,
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null, 
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
                 'query' => json_encode($querie), 
