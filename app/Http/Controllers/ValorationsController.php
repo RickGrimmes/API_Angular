@@ -17,10 +17,22 @@ class ValorationsController extends Controller
             $authenticatedUser = $request->user();
             DB::enableQueryLog();
 
-            $valorations = Valoration::with([
-                'user:id,name',
-                'videogame:id,nombre'
-            ])->get();
+            $id = $authenticatedUser->id;
+            $tipo = $authenticatedUser->role_id;
+
+            if ($tipo == 1)
+            {
+                $valorations = Valoration::with([
+                    'user:id,name',
+                    'videogame:id,nombre'
+                ])->get();
+            }
+            else {
+                $valorations = Valoration::with([
+                    'user:id,name',
+                    'videogame:id,nombre'
+                ])->where('user_id', "=", $id)->get();
+            }
 
             $valoration = $valorations->map(function ($valoration) {
                 return [
@@ -66,7 +78,6 @@ class ValorationsController extends Controller
         $authenticatedUser = $request->user();
 
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id',
             'videogame_id' => 'required|exists:videogames,id', 
             'estrellas' => 'required|integer|min:1|max:5'
         ]);
@@ -84,7 +95,8 @@ class ValorationsController extends Controller
         {
             DB::enableQueryLog();
 
-            $valoration = Valoration::create($request->all());
+            $valorationData = $request->only(['videogame_id', 'estrellas']) + ['user_id' => $authenticatedUser->id];
+            $valoration = Valoration::create($valorationData);
 
             $queries = DB::getQueryLog();
             $querie = end($queries)['query'];
@@ -166,7 +178,7 @@ class ValorationsController extends Controller
                 'status' => 'error',
                 'message' => 'Error al obtener los providers',
                 'error' => $e->getMessage(),
-            ], 500);
+            ], 500); 
         }
     }
 }

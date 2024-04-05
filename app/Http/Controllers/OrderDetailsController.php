@@ -95,10 +95,12 @@ class OrderDetailsController extends Controller
 
     public function store(Request $request)
     {
+        // que de un error si la cantidad solicitada supera al stock en videojuegos
+        // autorellena el totalPrice en base a cuanto le puse de quantity y el valor de videojuegos
         $authenticatedUser = $request->user();
         $validator=Validator::make($request->all(),[
-            'order_id'=>'required|numeric',
-            'videogame_id'=>'required|numeric',
+            'order_id'=>'required|numeric|exists:orders,id',
+            'videogame_id'=>'required|numeric|exists:videogames,id',
             'quantity'=>'required|numeric',
             'totalPrice'=>'required|numeric',
         ]);

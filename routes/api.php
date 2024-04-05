@@ -4,6 +4,7 @@ use App\Http\Controllers\GenreController;
 use App\Http\Controllers\LogsController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderDetailsController;
+use App\Http\Controllers\PlatformController;
 use App\Http\Controllers\ProvidersController;
 use App\Http\Controllers\ShippersController;
 use App\Http\Controllers\UsersController;
@@ -107,6 +108,8 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
     //--------------------------------------------------------------------------------------------------------------------------
     Route::get('/genres', [GenreController::class, 'index']);
     Route::post('/genres', [GenreController::class, 'sse']);
+
+    Route::get('/platform', [PlatformController::class, 'index']);
  });
 // invitado nomas puede ver cosas pero nada mas, cliente puede ver, pero solo agregar y modificar
 

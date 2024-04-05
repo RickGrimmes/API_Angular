@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\RequestLog;
-use App\Models\Valoration;
+use App\Models\Valoration; 
 use App\Models\videogamePlatform;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

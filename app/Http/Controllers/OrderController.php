@@ -16,11 +16,26 @@ class OrderController extends Controller
         $authenticatedUser = $request->user();
         DB::enableQueryLog();
 
-        $orders = Order::with([
-            'user:id,name',
-            'shipper:id,name',
-            'state:id,estado'
-        ])->get();
+        $id = $authenticatedUser->id;
+        $tipo = $authenticatedUser->role_id;
+
+        if ($tipo == 1)
+        {
+            $orders = Order::with([
+                'user:id,name',
+                'shipper:id,name',
+                'state:id,estado'
+            ])->where('state_id', '<', 4)->get();
+        }
+        else {
+            $orders = Order::with([
+                'user:id,name',
+                'shipper:id,name',
+                'state:id,estado'
+            ])
+            ->where('state_id', '<', 4)
+            ->where('user_id', '=', $id)->get();
+        }
 
         $order = $orders->map(function ($order) {
             return [
@@ -87,6 +102,7 @@ class OrderController extends Controller
     }
     public function store(Request $request)
     {
+        // que agarre el id del usaurio autenticado en vez del id del request
         $authenticatedUser = $request->user();
 
         DB::enableQueryLog();
@@ -158,5 +174,7 @@ class OrderController extends Controller
         }
         return response()->json(['message'=>'Order no encontrada'], 404);
     }
+
+    // metodo para eliminar, en el get solo muestro los que no están cancelados
 }
 
