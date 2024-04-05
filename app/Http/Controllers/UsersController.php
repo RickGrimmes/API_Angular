@@ -20,8 +20,8 @@ class UsersController extends Controller
 {
     public function index(Request $request)
     {
-       
-
+                                                 
+                            
         DB::enableQueryLog();
 
         $users = User::with([

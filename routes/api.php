@@ -46,14 +46,12 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
     Route::delete('User/{id}', [UsersController::class, 'destroy']); // 1
     Route::put('User/{id}', [UsersController::class, 'update']);
     Route::post('User/logout', [UsersController::class, 'logout']); // 1
-
     Route::post('validarCodigo', [UsersController::class, 'validarCodigo']);
 
+    //--------------------------------------------------------------------------------------------------------------------------
     Route::resource('Order',OrderController::class);
     Route::resource('OrderDit',OrderDetailsController::class);
-    
     Route::get('OrderDit/{id}', [OrderDetailsController::class, 'show']);
-
     //--------------------------------------------------------------------------------------------------------------------------
     // index solo es llamar a todos los juegos
     Route::get('/videogames', [VideogamesController::class, 'index']); // 1
@@ -66,16 +64,13 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
     Route::put('/videogames/{id}', [VideogamesController::class, 'update']);
     // elimina el juego en base a la id, la ruta requiere de la id, solo eso necesita
     Route::delete('/videogames/{id}', [VideogamesController::class, 'destroy']);
-
     //--------------------------------------------------------------------------------------------------------------------------
     Route::get('/shippers', [ShippersController::class, 'index']);
     Route::post('/shippers', [ShippersController::class, 'store']);
     Route::put('/shippers/{id}', [ShippersController::class, 'update']);
     Route::delete('/shippers/{id}', [ShippersController::class, 'destroy']);
-
     //--------------------------------------------------------------------------------------------------------------------------
-
-//    Route::middleware('jwt.verify')->group(function(){
+    // Route::middleware('jwt.verify')->group(function(){
         Route::get('/providers', [ProvidersController::class, 'index']);
         Route::post('/providers', [ProvidersController::class, 'store']);
         Route::put('/providers/{id}', [ProvidersController::class, 'update']);
@@ -86,7 +81,6 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
     Route::get('/valorations', [ValorationsController::class, 'index']);
     Route::post('/valorations', [ValorationsController::class, 'store']);
     // esta está curiosa, porque, debe recibir el id del juego, ok, pero cómo hago que ubique al user, una forma sería, obvio ubica al user con su token, sí, y al yo actualizar como usuario le pico al juego y me muestra mi valoración, ahí yo ya estoy en un usaurio y un juego, ya solo actualizo, entonces recibo como tal ambos campos, pero si es así, yo en la ruta debo recibir solo el id del juego y el del usuario, no hay de otra, debo recibir ambos, entonces si recibo ambos, ya puedo actualizar, necesito ambos id para actualizar
-
     // SOLO ME FALTA ESTE ACTUALIZAR PARA VALORACIONES
     Route::put('/valorations/{user_id}/{videogame_id}', [ValorationsController::class, 'update']);
 
