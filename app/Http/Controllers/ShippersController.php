@@ -28,7 +28,7 @@ class ShippersController extends Controller
                 'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
                 'http_verb' => request()->method(),
                 'route' => request()->path(),
-                'query' => $sqlQuery,
+                'query' => json_encode($sqlQuery),
                 'data' => null,
                 'request_time' => now()->toDateTimeString()
             ]);
@@ -161,7 +161,7 @@ class ShippersController extends Controller
     public function destroy(Request $request, $id)
     {
         $authenticatedUser = $request->user();
-        $shipper = Shipper::findOrFail($id);
+        $shipper = Shipper::find($id);
 
         try
         {
