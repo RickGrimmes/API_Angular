@@ -175,6 +175,46 @@ class OrderController extends Controller
         return response()->json(['message'=>'Order no encontrada'], 404);
     }
 
+    public function destroy(Request $request, $id)
+    {
+        $authenticatedUser = $request->user();
+        $order = Order::findOrFail($id);
+
+        try
+        {
+            DB::enableQueryLog();
+            
+            $order->update(['state_id' => 4]);
+
+            $queries = DB::getQueryLog();
+            $querie = end($queries)['query'];
+
+            RequestLog::create([
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null,
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => json_encode($querie), 
+                'data' => json_encode($order),
+                'request_time'=> now()->toDateTimeString()
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $order
+            ], 200);
+        }
+        catch (\Exception $e)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener los providers',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     // metodo para eliminar, en el get solo muestro los que no están cancelados
 }
 

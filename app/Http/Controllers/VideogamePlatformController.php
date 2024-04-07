@@ -63,6 +63,27 @@ class VideogamePlatformController extends Controller
         }
     }
 
+    public function show($id)
+    {
+        try
+        {
+            $vp = videogamePlatform::findOrFail($id);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $vp,
+            ], 200);
+        }
+        catch (\Exception $e)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener el provider',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function indexV(Request $request, $id)
     {
         try

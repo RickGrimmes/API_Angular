@@ -62,6 +62,27 @@ class VideogameProviderController extends Controller
         }
     }
 
+    public function show($id)
+    {
+        try
+        {
+            $vprovider = videogameProvider::findOrFail($id);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $vprovider,
+            ], 200);
+        }
+        catch (\Exception $e)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener el provider',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function indexV(Request $request, $id)
     {
         try

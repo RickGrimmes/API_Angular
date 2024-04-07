@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\orderDetail;
 use App\Models\RequestLog;
+use App\Models\Videogame;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -95,19 +96,27 @@ class OrderDetailsController extends Controller
 
     public function store(Request $request)
     {
-        // que de un error si la cantidad solicitada supera al stock en videojuegos
         // autorellena el totalPrice en base a cuanto le puse de quantity y el valor de videojuegos
         $authenticatedUser = $request->user();
         $validator=Validator::make($request->all(),[
             'order_id'=>'required|numeric|exists:orders,id',
             'videogame_id'=>'required|numeric|exists:videogames,id',
-            'quantity'=>'required|numeric',
-            'totalPrice'=>'required|numeric',
+            'quantity'=>'required|numeric'
         ]);
         if($validator->fails())
             {
                 return response()->json($validator->errors(),400);
             }
+        
+            $videogame = Videogame::find($request->videogame_id);
+            if ($videogame->inStock < $request->quantity) {
+                return response()->json(['error' => 'La cantidad solicitada supera el stock disponible'], 400);
+            }
+
+            // aplica el descuento
+            $discountPrice = $videogame->unitPrice * (1 - ($videogame->discount / 100));
+
+            $totalPrice = $request->quantity * $discountPrice;
 
             DB::enableQueryLog();
 
@@ -115,8 +124,11 @@ class OrderDetailsController extends Controller
                 'order_id'=>$request->order_id,
                 'videogame_id'=>$request->videogame_id,
                 'quantity'=>$request->quantity,
-                'totalPrice'=>$request->totalPrice,
+                'totalPrice'=>$totalPrice,
             ]);
+
+            $videogame->inStock -= $request->quantity;
+            $videogame->save();
 
             $queries = DB::getQueryLog();
             $querie = end($queries)['query'];

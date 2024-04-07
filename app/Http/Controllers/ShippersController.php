@@ -49,6 +49,27 @@ class ShippersController extends Controller
         }
     }
 
+    public function show($id)
+    {
+        try
+        {
+            $shipper = Shipper::findOrFail($id);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $shipper,
+            ], 200);
+        }
+        catch (\Exception $e)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener el shipper',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
     public function store(Request $request)
     {
         $authenticatedUser = $request->user();

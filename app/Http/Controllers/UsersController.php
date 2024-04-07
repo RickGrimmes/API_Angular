@@ -27,9 +27,7 @@ class UsersController extends Controller
            return response()->json([
                'message' => 'No tiene permiso para ver este contenido'
            ], 403);
-       }
-
-                                                 
+       }                            
                             
         DB::enableQueryLog();
 

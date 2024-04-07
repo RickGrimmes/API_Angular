@@ -123,7 +123,7 @@ class VideogamesController extends Controller
 
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|string|min:2|max:200',
-            'genre_id' => 'required|exists:genres,id', // Asegúrate de que el genero_id existe en la tabla generos
+            'genre_id' => 'required|exists:genres,id', 
             'unitPrice' => 'required|numeric|min:0|',
             'description' => 'required|string|min:10',
             'inStock' => 'required|integer',

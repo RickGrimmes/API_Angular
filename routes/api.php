@@ -67,12 +67,15 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
     Route::delete('/videogames/{id}', [VideogamesController::class, 'destroy']);
     //--------------------------------------------------------------------------------------------------------------------------
     Route::get('/shippers', [ShippersController::class, 'index']);
+    Route::get('/shippers/{id}', [ShippersController::class, 'show']);
     Route::post('/shippers', [ShippersController::class, 'store']);
     Route::put('/shippers/{id}', [ShippersController::class, 'update']);
     Route::delete('/shippers/{id}', [ShippersController::class, 'destroy']);
+
     //--------------------------------------------------------------------------------------------------------------------------
     // Route::middleware('jwt.verify')->group(function(){
         Route::get('/providers', [ProvidersController::class, 'index']);
+        Route::get('/providers/{id}', [ProvidersController::class, 'show']);
         Route::post('/providers', [ProvidersController::class, 'store']);
         Route::put('/providers/{id}', [ProvidersController::class, 'update']);
         Route::delete('/providers/{id}', [ProvidersController::class, 'destroy']);
@@ -80,6 +83,7 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
 
     //--------------------------------------------------------------------------------------------------------------------------
     Route::get('/valorations', [ValorationsController::class, 'index']);
+    Route::get('/valorations/{id}', [ValorationsController::class, 'show']);
     Route::post('/valorations', [ValorationsController::class, 'store']);
     // esta está curiosa, porque, debe recibir el id del juego, ok, pero cómo hago que ubique al user, una forma sería, obvio ubica al user con su token, sí, y al yo actualizar como usuario le pico al juego y me muestra mi valoración, ahí yo ya estoy en un usaurio y un juego, ya solo actualizo, entonces recibo como tal ambos campos, pero si es así, yo en la ruta debo recibir solo el id del juego y el del usuario, no hay de otra, debo recibir ambos, entonces si recibo ambos, ya puedo actualizar, necesito ambos id para actualizar
     // SOLO ME FALTA ESTE ACTUALIZAR PARA VALORACIONES
@@ -87,6 +91,7 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
 
     //--------------------------------------------------------------------------------------------------------------------------
     Route::get('/videogamePlatforms', [VideogamePlatformController::class, 'index']);
+    Route::get('/videogamePlatforms/{id}', [VideogamePlatformController::class, 'show']);
     Route::get('/videogamePlatforms/v/{id}', [VideogamePlatformController::class, 'indexV']);
     Route::get('/videogamePlatforms/p/{id}', [VideogamePlatformController::class, 'indexP']);
     Route::post('/videogamePlatforms', [VideogamePlatformController::class, 'store']);
@@ -94,6 +99,7 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
 
     //--------------------------------------------------------------------------------------------------------------------------
     Route::get('/videogameProviders', [VideogameProviderController::class, 'index']);
+    Route::get('/videogameProviders/{id}', [VideogameProviderController::class, 'show']);
     Route::get('/videogameProviders/v/{id}', [VideogameProviderController::class, 'indexV']);
     Route::get('/videogameProviders/p/{id}', [VideogameProviderController::class, 'indexP']);
     Route::post('/videogameProviders', [VideogameProviderController::class, 'store']);

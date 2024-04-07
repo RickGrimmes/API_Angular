@@ -14,7 +14,6 @@ class ProvidersController extends Controller
     {
         try
         {
-            // Verificar si el usuario está autenticado y obtener su información
             $authenticatedUser = $request->user();
 
             DB::enableQueryLog();
@@ -46,6 +45,27 @@ class ProvidersController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Error al obtener los providers',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function show($id)
+    {
+        try
+        {
+            $provider = Provider::findOrFail($id);
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $provider,
+            ], 200);
+        }
+        catch (\Exception $e)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener el provider',
                 'error' => $e->getMessage(),
             ], 500);
         }
