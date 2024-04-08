@@ -372,8 +372,8 @@ class ComposerStaticInit0f6a552125b9c5898255f904a5fe925a
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -578,6 +578,7 @@ class ComposerStaticInit0f6a552125b9c5898255f904a5fe925a
         'App\\Http\\Controllers\\LogsController' => __DIR__ . '/../..' . '/app/Http/Controllers/LogsController.php',
         'App\\Http\\Controllers\\OrderController' => __DIR__ . '/../..' . '/app/Http/Controllers/OrderController.php',
         'App\\Http\\Controllers\\OrderDetailsController' => __DIR__ . '/../..' . '/app/Http/Controllers/OrderDetailsController.php',
+        'App\\Http\\Controllers\\PlatformController' => __DIR__ . '/../..' . '/app/Http/Controllers/PlatformController.php',
         'App\\Http\\Controllers\\ProvidersController' => __DIR__ . '/../..' . '/app/Http/Controllers/ProvidersController.php',
         'App\\Http\\Controllers\\ShippersController' => __DIR__ . '/../..' . '/app/Http/Controllers/ShippersController.php',
         'App\\Http\\Controllers\\UsersController' => __DIR__ . '/../..' . '/app/Http/Controllers/UsersController.php',

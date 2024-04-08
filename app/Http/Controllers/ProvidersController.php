@@ -186,11 +186,18 @@ class ProvidersController extends Controller
         $authenticatedUser = $request->user();
         $provider = Provider::findOrFail($id);
 
+        if ($provider->estado == 0) {
+            return response()->json([
+                'status' => 'info',
+                'message' => 'El proveedor ya está eliminado :P'
+            ], 200);
+        }
+
         try
         {
             DB::enableQueryLog();
 
-            $provider->delete();
+            $provider->update(['estado' => 0]);
             
             $queries = DB::getQueryLog();
             $querie = end($queries)['query'];
@@ -209,6 +216,54 @@ class ProvidersController extends Controller
             return response()->json([
                 'status' => 'success',
                 'message' => 'Provider eliminado'
+            ], 200);
+        }
+        catch (\Exception $e)
+        {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener los providers',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function quickRevive(Request $request, $id)
+    {
+        $authenticatedUser = $request->user();
+        $provider = Provider::findOrFail($id);
+
+        if ($provider->estado == 1) {
+            return response()->json([
+                'status' => 'info',
+                'message' => 'El proveedor ya está activo :D'
+            ], 200);
+        }
+
+        try
+        {
+            DB::enableQueryLog();
+
+            $provider->update(['estado' => 1]);
+            
+            $queries = DB::getQueryLog();
+            $querie = end($queries)['query'];
+
+            RequestLog::create([
+                'user_id' => $authenticatedUser ? $authenticatedUser->id : null,
+                'user_name' => $authenticatedUser ? $authenticatedUser->name : null,
+                'user_email' => $authenticatedUser ? $authenticatedUser->email : null,
+                'http_verb' => request()->method(),
+                'route' => request()->path(),
+                'query' => json_encode($querie), 
+                'data' => json_encode($provider),
+                'request_time'=> now()->toDateTimeString()
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Provider recuperado',
+                'data' => $provider
             ], 200);
         }
         catch (\Exception $e)

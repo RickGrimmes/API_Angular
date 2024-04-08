@@ -79,6 +79,7 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
         Route::post('/providers', [ProvidersController::class, 'store']);
         Route::put('/providers/{id}', [ProvidersController::class, 'update']);
         Route::delete('/providers/{id}', [ProvidersController::class, 'destroy']);
+        Route::post('/providers/{id}', [ProvidersController::class, 'quickRevive']);
 //    });
 
     //--------------------------------------------------------------------------------------------------------------------------

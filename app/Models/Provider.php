@@ -12,7 +12,8 @@ class Provider extends Model
     protected $fillable = [
         'nombre',
         'direccion',
-        'contacto'
+        'contacto',
+        'estado'
     ];
 
     public function provider()
