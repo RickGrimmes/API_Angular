@@ -18,7 +18,7 @@ class ProvidersController extends Controller
 
             DB::enableQueryLog();
 
-            $provider = Provider::all();
+            $provider = Provider::where('estado', 1) -> get();
 
             $queries = DB::getQueryLog();
             $sqlQuery = end($queries)['query'];
