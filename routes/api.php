@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\GenreController;
 use App\Http\Controllers\LogsController;
+use App\Http\Controllers\NotificationsController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderDetailsController;
 use App\Http\Controllers\PlatformController;
@@ -49,6 +50,7 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
     Route::post('User/logout', [UsersController::class, 'logout']); // 1
     Route::post('validarCodigo', [UsersController::class, 'validarCodigo']);
 
+    Route::put('cambiarRole', [UsersController::class, 'changeRole']);
     //--------------------------------------------------------------------------------------------------------------------------
     Route::resource('Order',OrderController::class);
     Route::resource('OrderDit',OrderDetailsController::class);
@@ -111,7 +113,13 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
     Route::post('/genres', [GenreController::class, 'sse']);
 
     Route::get('/platform', [PlatformController::class, 'index']);
+
+    //--------------------------------------------------------------------------------------------------------------------------
+    Route::post('/notification', [NotificationsController::class, 'create']);
  });
+
+ Route::get('send-notification', [NotificationsController::class, 'index']);
+
 // invitado nomas puede ver cosas pero nada mas, cliente puede ver, pero solo agregar y modificar
 
     

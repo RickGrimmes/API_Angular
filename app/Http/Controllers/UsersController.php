@@ -395,7 +395,50 @@ class UsersController extends Controller
                 'status' => 'success',
                 'token' => $token]);
         } else {
-            return response()->json('Código inválido');
+            return response()->json(['Código inválido'], 403);
+        }
+    }
+
+    public function changeRole (Request $request)
+    {
+        try
+        {
+            $authenticatedUser = Auth::user();
+
+            $root = $authenticatedUser->isRoot;
+
+            if (!$root)
+            {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'NO TIENES PERMITIDA ESTA FUNCIÓN'
+                ], 403);
+            }
+
+            $validator = Validator::make($request->all(), [
+                'user_id' => 'required|exists:users,id', 
+                'role_id' => 'required|exists:roles,id', 
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 400);
+            }
+
+            $user = User::findOrFail($request->user_id); 
+            $user->update(['role_id' => $request->role_id]);
+    
+            return response()->json([
+                'status' => 'success',
+                'message' => 'El rol del usuario ha sido actualizado correctamente.',
+                'data' => $user
+            ], 200);
+        }
+        catch (\Exception $e)
+        {
+            return response()->json([
+                'status' => 'error',
+                'error' => $e
+            ], 403);
         }
     }
 }

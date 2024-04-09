@@ -48,7 +48,7 @@ class GenreController extends Controller
         }
     }
 
-    /*
+    
     public function sse(Request $request)
     {
         $response = new StreamedResponse(function () {
@@ -68,5 +68,5 @@ class GenreController extends Controller
         return $response;
     }
 
-    */
+    
 }
