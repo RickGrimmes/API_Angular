@@ -100,15 +100,14 @@ class OrderController extends Controller
 
         return response()->json(['message'=>'Ordenes no encontradas para el usuario con id: '.$id], 404);
     }
+
     public function store(Request $request)
     {
-        // que agarre el id del usaurio autenticado en vez del id del request
         $authenticatedUser = $request->user();
 
         DB::enableQueryLog();
 
         $validator=Validator::make($request->all(),[
-            'user_id'=>'required|numeric',
             'shipper_id'=>'required|numeric',
             'state_id'=>'required|numeric'
         ]);
@@ -118,7 +117,7 @@ class OrderController extends Controller
         }
 
         $order=Order::create([
-            'user_id'=>$request->user_id,
+            'user_id'=>$authenticatedUser->id,
             'shipper_id'=>$request->shipper_id,
             'state_id'=>$request->state_id
         ]);

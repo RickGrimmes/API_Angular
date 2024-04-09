@@ -240,12 +240,10 @@ class VideogameProviderController extends Controller
         }
     }
 
-    public function update(Request $request, $provider_id, $videogame_id)
+    public function update(Request $request, $id)
     {
         $authenticatedUser = $request->user();
-        $videogameprov = videogameProvider::where('provider_id', $provider_id)
-        ->where('videogame_id', $videogame_id)
-        ->firstOrFail();
+        $videogameprov = videogameProvider::find($id);
 
         $validator = Validator::make($request->all(), [
             'provider_id' => 'required|integer|exists:providers,id'

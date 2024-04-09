@@ -88,7 +88,7 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
     Route::post('/valorations', [ValorationsController::class, 'store']);
     // esta está curiosa, porque, debe recibir el id del juego, ok, pero cómo hago que ubique al user, una forma sería, obvio ubica al user con su token, sí, y al yo actualizar como usuario le pico al juego y me muestra mi valoración, ahí yo ya estoy en un usaurio y un juego, ya solo actualizo, entonces recibo como tal ambos campos, pero si es así, yo en la ruta debo recibir solo el id del juego y el del usuario, no hay de otra, debo recibir ambos, entonces si recibo ambos, ya puedo actualizar, necesito ambos id para actualizar
     // SOLO ME FALTA ESTE ACTUALIZAR PARA VALORACIONES
-    Route::put('/valorations/{user_id}/{videogame_id}', [ValorationsController::class, 'update']);
+    Route::put('/valorations/{id}', [ValorationsController::class, 'update']);
 
     //--------------------------------------------------------------------------------------------------------------------------
     Route::get('/videogamePlatforms', [VideogamePlatformController::class, 'index']);
@@ -96,7 +96,7 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
     Route::get('/videogamePlatforms/v/{id}', [VideogamePlatformController::class, 'indexV']);
     Route::get('/videogamePlatforms/p/{id}', [VideogamePlatformController::class, 'indexP']);
     Route::post('/videogamePlatforms', [VideogamePlatformController::class, 'store']);
-    Route::put('/videogamePlatforms/{platform_id}/{videogame_id}', [VideogamePlatformController::class, 'update']);
+    Route::put('/videogamePlatforms/{id}', [VideogamePlatformController::class, 'update']);
 
     //--------------------------------------------------------------------------------------------------------------------------
     Route::get('/videogameProviders', [VideogameProviderController::class, 'index']);
@@ -104,7 +104,7 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
     Route::get('/videogameProviders/v/{id}', [VideogameProviderController::class, 'indexV']);
     Route::get('/videogameProviders/p/{id}', [VideogameProviderController::class, 'indexP']);
     Route::post('/videogameProviders', [VideogameProviderController::class, 'store']);
-    Route::put('/videogameProviders/{provider_id}/{videogame_id}', [VideogameProviderController::class, 'update']);
+    Route::put('/videogameProviders/{id}', [VideogameProviderController::class, 'update']);
 
     //--------------------------------------------------------------------------------------------------------------------------
     Route::get('/genres', [GenreController::class, 'index']);

@@ -242,13 +242,11 @@ class VideogamePlatformController extends Controller
         }
     }
 
-    public function update(Request $request, $platform_id, $videogame_id)
+    public function update(Request $request, $id)
     {
         $authenticatedUser = $request->user();
 
-        $videogameplat = videogamePlatform::where('platform_id', $platform_id)
-        ->where('videogame_id', $videogame_id)
-        ->firstOrFail();
+        $videogameplat = videogamePlatform::find($id);
 
         $validator = Validator::make($request->all(), [
             'platform_id' => 'required|integer|exists:platforms,id'

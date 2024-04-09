@@ -148,13 +148,11 @@ class ValorationsController extends Controller
         }
     }
 
-    public function update(Request $request, $user_id, $videogame_id)
+    public function update(Request $request, $id)
     {
         $authenticatedUser = $request->user();
 
-        $valoration = Valoration::where('user_id', $user_id)
-        ->where('videogame_id', $videogame_id)
-        ->firstOrFail();
+        $valoration = Valoration::find($id);
 
         $validator = Validator::make($request->all(), [
             'estrellas' => 'required|integer|min:1|max:5'
