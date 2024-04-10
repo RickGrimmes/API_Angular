@@ -11,9 +11,9 @@ class NotificationsController extends Controller
 {
     public function index()
     {
-        $user = User::all();
+        $users = User::all();
 
-        return ;
+        return view('sse', compact('users'));
     }
 
     public function create(Request $request)

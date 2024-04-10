@@ -82,6 +82,7 @@ class UsersController extends Controller
         return response()->json(['message'=>'usuario no encontrado'], 404);
     }
 
+    ///modificacion de login
     public function login(Request $request)
     {
         $credenciales = $request->only('email', 'password');
@@ -111,7 +112,7 @@ class UsersController extends Controller
         if($isActiver==1)
         {
             $token = JWTAuth::fromUser($user);
-
+            
             RequestLog::create([
                 'user_id' => $user->id,
                 'user_name' => $user->name,
@@ -121,22 +122,20 @@ class UsersController extends Controller
                 'query' => null,
                 'data' => 'SUCCESS',
                 'request_time' => now()->toDateTimeString()
+                
             ]);
-            
             $this->sendEmail($request);
             return response()->json([
-            'status' => 'success',
-            'user'=>$user,
-            'token' => $token]);
+                'status' => 'succes',
+                'user'=> $user
+                ],200);
         }
-
-        $token = JWTAuth::fromUser($user);
-
         return response()->json([
-        'status' => 'success',
-        'user'=>$user,
-        'token' => $token]);
+            'status' => 'error, cuenta no encontrada'
+            ],400);
+
     }
+
 
     public function logout (Request $request)
     {
@@ -312,6 +311,7 @@ class UsersController extends Controller
         return response()->json(['message'=>'usuario no encontrado'], 404);
     }
 
+        //modificacion de eliminar
     public function destroy($id)
     {
         $authenticatedUser = Auth::user();
@@ -326,8 +326,8 @@ class UsersController extends Controller
 
         if($user){
             DB::enableQueryLog();
-
-            $user->delete();
+            $user->isActive = 0;
+            $user->save();
             
             //$user = User::find($id);
 
@@ -348,7 +348,7 @@ class UsersController extends Controller
             return response()->json(['message' => 'Usuario eliminado: ',$user], 200);
         }
         return response()->json(['message'=>'usuario no encontrado'], 404);
-    }
+    } 
 
     public function sendEmail(Request $request)
     {
@@ -509,6 +509,24 @@ class UsersController extends Controller
                 'message' => 'Error en la verificación del código.',
                 'error' => $e->getMessage()
             ], 418);
+        }
+    }
+
+        //metodo para validar el codigo de login
+    public function validarLogin(Request $request)
+    {
+        $user = Auth::user();
+        
+        $user = User::where('email', $request->email)->first();
+        $codigoAlmacenado = $user->code;
+        $codigoSolicitud = $request->code;
+        if ($codigoAlmacenado && $codigoAlmacenado == $codigoSolicitud) {
+            $token = JWTAuth::fromUser($user);
+            return response()->json([
+                'status' => 'success',
+                'token' => $token]);
+        } else {
+            return response()->json(['Código inválido'], 403);
         }
     }
 }

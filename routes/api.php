@@ -53,6 +53,9 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
     Route::put('cambiarRole', [UsersController::class, 'changeRole']);
     Route::get('User2', [UsersController::class, 'index2']);
     Route::post('codecheck', [UsersController::class, 'codeCheck']);
+
+    //ruta para validar el codigo de login
+    Route::post('validarLogin', [UsersController::class, 'validarLogin']);
     //--------------------------------------------------------------------------------------------------------------------------
     Route::resource('Order',OrderController::class);
     Route::resource('OrderDit',OrderDetailsController::class);
@@ -77,14 +80,12 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
     Route::delete('/shippers/{id}', [ShippersController::class, 'destroy']);
 
     //--------------------------------------------------------------------------------------------------------------------------
-    // Route::middleware('jwt.verify')->group(function(){
-        Route::get('/providers', [ProvidersController::class, 'index']);
-        Route::get('/providers/{id}', [ProvidersController::class, 'show']);
-        Route::post('/providers', [ProvidersController::class, 'store']);
-        Route::put('/providers/{id}', [ProvidersController::class, 'update']);
-        Route::delete('/providers/{id}', [ProvidersController::class, 'destroy']);
-        Route::post('/providers/{id}', [ProvidersController::class, 'quickRevive']);
-//    });
+    Route::get('/providers', [ProvidersController::class, 'index']);
+    Route::get('/providers/{id}', [ProvidersController::class, 'show']);
+    Route::post('/providers', [ProvidersController::class, 'store']);
+    Route::put('/providers/{id}', [ProvidersController::class, 'update']);
+    Route::delete('/providers/{id}', [ProvidersController::class, 'destroy']);
+    Route::post('/providers/{id}', [ProvidersController::class, 'quickRevive']);
 
     //--------------------------------------------------------------------------------------------------------------------------
     Route::get('/valorations', [ValorationsController::class, 'index']);
