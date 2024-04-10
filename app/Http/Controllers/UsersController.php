@@ -476,39 +476,39 @@ class UsersController extends Controller
     }
 
     public function codeCheck(Request $request)
-{
-    try {
-        $authenticatedUser = Auth::user();
+    {
+        try {
+            $authenticatedUser = Auth::user();
 
-        $validator = Validator::make($request->all(), [
-            'code' => 'required|size:6|integer',
-        ]);
-    
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }    
+            $validator = Validator::make($request->all(), [
+                'code' => 'required|size:6|string',
+            ]);
+        
+            if ($validator->fails()) {
+                return response()->json($validator->errors(), 400);
+            }    
 
-        $codigo = $authenticatedUser->code;
+            $codigo = $authenticatedUser->code;
+            $codigoSolicitud = $request->code;
 
-        if ($codigo != $request->code) {
+            if ($codigo != $codigoSolicitud) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'El código ingresado no coincide con el código del usuario'
+                ], 400);
+            } else {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'El código ingresado coincide con el código del usuario'
+                ], 200);
+            }
+            
+        } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => 'El código ingresado no coincide con el código del usuario.'
-            ], 400);
-        } else {
-            return response()->json([
-                'status' => 'success',
-                'message' => 'El código ingresado coincide con el código del usuario.'
-            ], 200);
+                'message' => 'Error en la verificación del código.',
+                'error' => $e->getMessage()
+            ], 418);
         }
-        
-    } catch (\Exception $e) {
-        return response()->json([
-            'status' => 'error',
-            'message' => 'Error en la verificación del código.',
-            'error' => $e->getMessage()
-        ], 418);
     }
-}
-
 }
