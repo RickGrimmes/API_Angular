@@ -51,6 +51,8 @@ Route::post('User/login', [UsersController::class, 'login']); // 1
     Route::post('validarCodigo', [UsersController::class, 'validarCodigo']);
 
     Route::put('cambiarRole', [UsersController::class, 'changeRole']);
+    Route::get('User2', [UsersController::class, 'index2']);
+    Route::post('codecheck', [UsersController::class, 'codeCheck']);
     //--------------------------------------------------------------------------------------------------------------------------
     Route::resource('Order',OrderController::class);
     Route::resource('OrderDit',OrderDetailsController::class);

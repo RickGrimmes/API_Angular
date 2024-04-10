@@ -441,4 +441,74 @@ class UsersController extends Controller
             ], 403);
         }
     }
+
+    public function index2 (Request $request)
+    {
+        $authenticatedUser = $request->user();                         
+                          
+        $users = User::with([
+            'role:id,rol'
+        ])->where('isActive', 1)
+        ->get();
+
+        if ($users->isEmpty()) {
+            return response()->json(['data' => 'No se encontraron usuarios activos'], 404);
+        }
+
+        $user = $users->map(function ($user)
+        {
+            return [
+                'id' => $user->id,
+                'email' => $user->email,
+                'role' => $user->role->rol,
+                'isRoot' => $user->isRoot
+            ];
+        });
+
+        if($user){
+            return response()->json([
+                'message' => 'Usuario ecncontrado: ',
+                'data' => $user
+            ], 200);
+        }
+
+        return response()->json(['message'=>'usuario no encontrado'], 404);
+    }
+
+    public function codeCheck(Request $request)
+{
+    try {
+        $authenticatedUser = Auth::user();
+
+        $validator = Validator::make($request->all(), [
+            'code' => 'required|size:6|integer',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 400);
+        }    
+
+        $codigo = $authenticatedUser->code;
+
+        if ($codigo != $request->code) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'El código ingresado no coincide con el código del usuario.'
+            ], 400);
+        } else {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'El código ingresado coincide con el código del usuario.'
+            ], 200);
+        }
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Error en la verificación del código.',
+            'error' => $e->getMessage()
+        ], 418);
+    }
+}
+
 }
